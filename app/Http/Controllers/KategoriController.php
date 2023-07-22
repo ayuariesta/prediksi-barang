@@ -41,7 +41,7 @@ class KategoriController extends Controller
     {
 
         $kategori = Kategori::find($id);
-        return view('pages.billing',compact('kategori'));
+        return view('pages.kategori-edit',compact('kategori'));
     }
 
     public function update(Request $request, $id)
