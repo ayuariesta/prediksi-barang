@@ -10,7 +10,8 @@ class BahanPangan extends Model
 {
     use HasFactory;
 
-    protected $table = 'bahan_pangan';
+    public $table = 'bahan_pangan';
+    protected $fillable = ['nama_bahan', 'tahun', 'bulan', 'harga'];
 
     public function kategori()
     {

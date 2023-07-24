@@ -6,24 +6,26 @@
         <div class="col-14">
             <div class="card mb-4">
                 <div class="card-header pb-0">
-                    <h6>Kategori</h6>
-                    <br>
-                        <a href="#" class="btn btn-sm btn-success" id="tambah-kategori" data-bs-toggle="modal" data-bs-target="#exampleModal"><i class="fa fa-plus"></i> Tambah Data</a>
-                    <br>
+                    <h6>Edit Kategori</h6>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-bordered table-striped yajra-datatable" id="kategori-table">
-                            <thead>
-                                <tr>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">ID</th>
-                                    <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Nama Kategori</th>
-                                    <th class="text-center text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                            </tbody>
-                        </table>
+                        <form action="" method="POST" enctype="multipart/form-data">
+                        @csrf
+                        <div class="mb-3">
+                            <label for="nama_kategori" class="form-label">Nama Kategori</label><br>
+                            <input type="text" class="form-control @error('nama_kategori') is-invalid @enderror" id="nama_kategori" name="nama_kategori" placeholder="Masukkan Nama Kategori" value="{{ $kategori->nama_kategori }}">
+                            @error('nama_kategori')
+                                <span class="invalid-feedback" role="alert">
+                                    <strong>{{ $message }}</strong>
+                                </span>
+                            @enderror
+                        </div>
+                    <br>
+                    <br>
+
+                    <div>
+                        <button type="submit" class="btn btn-primary">Simpan</button>
+                        <a href="{{route('kategori')}}" class="btn btn-secondary">Kembali</a>
                     </div>
                 </div>
             </div>

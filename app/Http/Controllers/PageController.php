@@ -30,9 +30,4 @@ class PageController extends Controller
     {
         return view("pages.rtl");
     }
-
-    public function profile()
-    {
-        return view("pages.profile-static");
-    }
 }

@@ -20,6 +20,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\BahanPanganController;
+use App\Http\Controllers\PrediksiController;
 use App\Http\Controllers\ResetPassword;
 use App\Http\Controllers\ChangePassword;
 
@@ -36,10 +37,13 @@ Route::get('/', function () {return redirect('/dashboard');})->middleware('auth'
 Route::group(['middleware' => 'auth'], function () {
 	Route::get('/profile', [UserProfileController::class, 'show'])->name('profile');
 	Route::post('/profile', [UserProfileController::class, 'update'])->name('profile.update');
-	Route::get('/profile-static', [PageController::class, 'profile'])->name('profile-static');
+	Route::get('/prediksi', [PrediksiController::class, 'form'])->name('prediksi');
+	Route::post('/prediksi', [PrediksiController::class, 'prediksiHarga'])->name('prediksiHarga');
 	Route::get('/bahan-pangan', [BahanPanganController::class, 'index'])->name('bahan-pangan');
 	Route::post('/bahan-pangan',  [BahanPanganController::class, 'save'])->name('bahan-save');
 	Route::get('/bahan-pangan/hapus/{id}', [BahanPanganController::class, 'delete'])->name('bahan-hapus');
+	Route::get('/bahan-pangan/edit/{id}', [BahanPanganController::class, 'edit'])->name('bahan-edit');
+    Route::post('/bahan-pangan/edit/{id}', [BahanPanganController::class, 'update'])->name('bahan-update');
 	Route::get('/kategori', [KategoriController::class, 'index'])->name('kategori');
 	Route::post('/kategori',  [KategoriController::class, 'save'])->name('kategori-save');
 	Route::get('/kategori/create', [KategoriController::class, 'create'])->name('kategori-create');

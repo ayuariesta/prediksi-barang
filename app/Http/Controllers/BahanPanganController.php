@@ -21,7 +21,7 @@ class BahanPanganController extends Controller
             return Datatables::of($bahanpangan)
                 ->addIndexColumn()
                 ->addColumn('action', function ($data) {
-                    $button = ' <a href="#" class="edit btn btn-success" id="getEditKategoriData" data-id="'.$data->id.'" ><i class="fa fa-edit"></i></a>';
+                    $button = ' <a href="'. route("bahan-edit", $data->id).'" class="edit btn btn-success" id="'.$data->id.'" ><i class="fa fa-edit"></i></a>';
                     $button .= ' <a href="'. route("bahan-hapus", $data->id).'" class="hapus btn btn-danger" id="' . $data->id . '"><i class="fa fa-trash"></i></a>';
                     return $button;
                 })
@@ -50,6 +50,29 @@ class BahanPanganController extends Controller
             $bahanpangan->save();
 
         alert()->success('Bahan Pangan Berhasil Disimpan');
+        return redirect('bahan-pangan');
+    }
+
+    public function edit($id)
+    {
+
+        $bahanpangan = BahanPangan::find($id);
+        $kategori = Kategori::select('*')->get();
+        return view('pages.bahan-pangan-edit',compact('bahanpangan','kategori'));
+    }
+
+    public function update(Request $request, $id)
+    {
+
+        $bahanpangan = BahanPangan::findOrFail($id);
+
+        $bahanpangan->kategori_id   = $request->kategori_id;
+        $bahanpangan->nama_bahan    = $request->nama_bahan;
+        $bahanpangan->bulan         = $request->bulan;
+        $bahanpangan->tahun         = $request->tahun;
+        $bahanpangan->harga         = $request->harga;
+        $bahanpangan->update();
+        alert()->success('Bahan Pangan Berhasil Diupdate', 'Success');
         return redirect('bahan-pangan');
     }
 

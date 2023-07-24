@@ -64,7 +64,7 @@
                             @enderror
                     </div>
                     <div class="mb-3">
-                        <label for="bulan" class="form-label">Kategori</label><br>
+                        <label for="bulan" class="form-label">Bulan</label><br>
                             <select class="form-control @error('bulan') is-invalid @enderror" name="bulan" id="bulan">
                                 <option selected>Pilih Bulan</option>
                                 <option  value="januari">Januari</option>
