@@ -38,7 +38,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/profile', [UserProfileController::class, 'show'])->name('profile');
 	Route::post('/profile', [UserProfileController::class, 'update'])->name('profile.update');
 	Route::get('/prediksi', [PrediksiController::class, 'form'])->name('prediksi');
-	Route::post('/prediksi', [PrediksiController::class, 'prediksiHarga'])->name('prediksiHarga');
+	Route::post('/prediksi', [PrediksiController::class, 'prediksiHarga'])->name('prediksi-harga');
 	Route::get('/bahan-pangan', [BahanPanganController::class, 'index'])->name('bahan-pangan');
 	Route::post('/bahan-pangan',  [BahanPanganController::class, 'save'])->name('bahan-save');
 	Route::get('/bahan-pangan/hapus/{id}', [BahanPanganController::class, 'delete'])->name('bahan-hapus');

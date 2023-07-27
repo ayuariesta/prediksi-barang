@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\BahanPangan;
+use Yajra\DataTables\DataTables;
 
 class PrediksiController extends Controller
 {
@@ -11,8 +12,10 @@ class PrediksiController extends Controller
     {
 
         $data_bahan = BahanPangan::select('nama_bahan')->distinct()->pluck('nama_bahan');
+        $tableData = [];
 
-        return view('pages.prediksi', ['data_bahan' => $data_bahan]);
+        return view('pages.prediksi', ['data_bahan' => $data_bahan, 'tableData' => $tableData]);
+
     }
 
     public function prediksiHarga(Request $request)
@@ -23,52 +26,60 @@ class PrediksiController extends Controller
 
         $nama_bahan = $request->input('nama_bahan');
 
+        $tableData = $this->calculateValues($nama_bahan);
+
+        $data_bahan = BahanPangan::select('nama_bahan')->distinct()->pluck('nama_bahan');
+        return view('pages.prediksi', compact('nama_bahan', 'data_bahan', 'tableData'));
+    }
+
+    public function calculateValues($nama_bahan)
+    {
+        // Retrieve data from your database or data source based on the selected nama_bahan
         $dataHistori = BahanPangan::where('nama_bahan', $nama_bahan)
             ->orderBy('tahun', 'asc')
             ->orderBy('bulan', 'asc')
-            ->get(['harga', 'tahun', 'bulan']);
+            ->get();
 
         $n = count($dataHistori);
         $xValues = [];
-        $yValues = [];
+        $xSquaredValues = [];
+        $xyValues = [];
 
-        foreach ($dataHistori as $data) {
-            $xValues[] = ($data->tahun - $dataHistori[0]->tahun) * 12 + $data->bulan;
-            $yValues[] = $data->harga;
+        $median = $n % 2 == 0 ? $n / 2 : ($n + 1) / 2;
+
+        // Calculate variable X for odd value of n
+        if ($n % 2 === 1) {
+            for ($i = 0; $i <= $n; $i++) {
+                $xValue = $i - $median;
+                $xValues[] = $xValue;
+                $xSquaredValues[] = pow($xValue, 2);
+                $xyValues[] = $xValue * $dataHistori[$i]->harga;
+            }
         }
 
-        $xSum = array_sum($xValues);
-        $ySum = array_sum($yValues);
-        $xySum = 0;
-        $xSquaredSum = 0;
-
-        foreach ($xValues as $index => $x) {
-            $xySum += $x * $yValues[$index];
-            $xSquaredSum += pow($x, 2);
+        // Calculate variable X for even value of n
+        else {
+            foreach ($dataHistori as $i => $data) {
+                $xValue = ($i + ($i + 1)) / 2 - $median;
+                $xValues[] = $xValue;
+                $xSquaredValues[] = pow($xValue, 2);
+                $xyValues[] = $xValue * $data->harga;
+            }
         }
 
-        if($n > 0 && $xySum > 0 && $xSum > 0 && $ySum > 0 && $xSquaredSum > 0 ){
-            $a = ($n * $xySum - $xSum * $ySum) / ($n * $xSquaredSum - pow($xSum, 2));
-            $b = ($ySum - $a * $xSum) / $n;
-        }
-        $predictions = [];
-        $latestData = $dataHistori->last();
-        $latestYear = $latestData->tahun;
-        $latestMonth = $latestData->bulan;
-
-        for ($i = 1; $i <= 12; $i++) {
-            $predictedMonth = ($latestYear - $dataHistori[0]->tahun) * 12 + $latestMonth + $i;
-            $predictedYear = floor(($predictedMonth - 1) / 12) + $dataHistori[0]->tahun;
-            $predictedMonth = ($predictedMonth - 1) % 12 + 1;
-
-            $predictedPrice = $a * $predictedMonth + $b;
-            $predictions[] = [
-                'tahun' => $predictedYear,
-                'bulan' => $predictedMonth,
-                'predicted_price' => $predictedPrice,
+        // Combine the $xValues, $xSquaredValues, and $xyValues arrays to be displayed in the table
+        $tableData = [];
+        foreach ($dataHistori as $index => $data) {
+            $tableData[] = [
+                'bulan' => $data->bulan,
+                'tahun' => $data->tahun,
+                'harga_aktual' => $data->harga,
+                'x' => $xValues[$index],
+                'x_squared' => $xSquaredValues[$index],
+                'xy' => $xyValues[$index],
             ];
         }
 
-        return view('pages.prediksi', ['nama_bahan' => $nama_bahan, 'prediksi' => $predictions]);
+        return $tableData;
     }
 }

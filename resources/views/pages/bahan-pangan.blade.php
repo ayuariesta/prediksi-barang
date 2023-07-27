@@ -67,18 +67,18 @@
                         <label for="bulan" class="form-label">Bulan</label><br>
                             <select class="form-control @error('bulan') is-invalid @enderror" name="bulan" id="bulan">
                                 <option selected>Pilih Bulan</option>
-                                <option  value="januari">Januari</option>
-                                <option  value="februari">Februari</option>
-                                <option  value="maret">Maret</option>
-                                <option  value="april">April</option>
-                                <option  value="mei">Mei</option>
-                                <option  value="juni">Juni</option>
-                                <option  value="juli">Juli</option>
-                                <option  value="agustus">Agustus</option>
-                                <option  value="september">September</option>
-                                <option  value="oktober">Oktober</option>
-                                <option  value="november">November</option>
-                                <option  value="desember">Desember</option>
+                                <option  value="1">Januari</option>
+                                <option  value="2">Februari</option>
+                                <option  value="3">Maret</option>
+                                <option  value="4">April</option>
+                                <option  value="5">Mei</option>
+                                <option  value="6">Juni</option>
+                                <option  value="7">Juli</option>
+                                <option  value="8">Agustus</option>
+                                <option  value="9">September</option>
+                                <option  value="10">Oktober</option>
+                                <option  value="11">November</option>
+                                <option  value="12">Desember</option>
                             </select>
                             @error('bulan')
                                 <span class="invalid-feedback" role="alert">
@@ -112,7 +112,7 @@
                 processing: true,
                 serverSide: true,
                 autoWidth: false,
-                pageLength: 5,
+                pageLength: 10,
                 language:{
                     "url":"https://cdn.datatables.net/plug-ins/1.10.9/i18n/Indonesian.json"
                 },
@@ -137,7 +137,6 @@
                     },
                     {
                         data: 'bulan',
-                        name: 'bulan',
                         searchable: false,
                         sClass:'text-center'
                     },
@@ -161,9 +160,10 @@
                         searchable: false,
                         sClass:'text-center'
                     }
-                ]
+                ],
             });
 });
+
 //mendapatkan data untuk update
 $('.modelClose').on('click', function(){
             $('#editKategori').hide();

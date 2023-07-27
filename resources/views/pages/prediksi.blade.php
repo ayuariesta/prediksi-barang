@@ -12,56 +12,140 @@
                         </div>
                     </div>
                     <div class="card-body">
-                    <form action="{{ route('prediksiHarga') }}" method="post">
+                    <form action="{{ route('prediksi-harga') }}" method="POST">
                         @csrf
                         <label for="nama_bahan">Pilih Nama Bahan:</label>
-                        <select class="form-select" aria-label="Default select example" name="nama_bahan" id="nama_bahan">
-                            @foreach ($data_bahan as $nama_bahan => $data_bahan)
-                                <option value="{{ $nama_bahan }}">{{ $data_bahan }}</option>
+                        <select class="form-select" name="nama_bahan" id="nama_bahan">
+                            @foreach ($data_bahan as $bahan)
+                                <option value="{{ $bahan}}">{{ $bahan }}</option>
                             @endforeach
                         </select>
                         <br>
                         <button type="submit" class="btn btn-primary">Simpan</button>
                     </form>
+                        <br>
                         <div class="table-responsive">
-                            <table class="table table-bordered table-striped" id="kategori-table">
-                                <thead>
-                                    <tr>
-                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">No.</th>
-                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Bulan</th>
-                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Tahun</th>
-                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Harga</th>
-                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">x</th>
-                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">x<sup>2</sup></th>
-                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">x.y</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                </tbody>
-                            </table>
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr class="text-center">
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Bulan</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tahun</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Harga Aktual</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">X</th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">X<sup>2</sup></th>
+                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">X.Y</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                    @foreach ($tableData as $data)
+                                            <tr class="text-center">
+                                                <td>
+                                                @php
+                                                    $monthNames = [
+                                                        1 => 'Januari', 2 => 'Februari', 3 => 'Maret',
+                                                        4 => 'April', 5 => 'Mei', 6 => 'Juni',
+                                                        7 => 'Juli', 8 => 'Agustus', 9 => 'September',
+                                                        10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+                                                    ];
+                                                    $bulan = $monthNames[$data['bulan']];
+                                                @endphp
+                                                {{ $bulan }}
+                                                </td>
+                                                <td>{{ $data['tahun'] }}</td>
+                                                <td>Rp {{ number_format($data['harga_aktual'], 0, ',', '.') }}</td>
+                                                <td>{{ $data['x'] }}</td>
+                                                <td>{{ $data['x_squared'] }}</td>
+                                                <td>{{ $data['xy'] }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                        </div>
+                        <br>
+                        <p class="mb-0 font-weight-bold">Nilai &Sigma;Y, &Sigma;X, &Sigma;X<sup>2</sup>, &Sigma;X.Y</p>
+                        <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr class="text-center">
+                                            <th class="font-weight-bold text-uppercase text-secondary text-m font-weight-bolder">&Sigma;Y</th>
+                                            <th class="font-weight-bold text-uppercase text-secondary text-m font-weight-bolder">&Sigma;X</th>
+                                            <th class="font-weight-bold text-uppercase text-secondary text-m font-weight-bolder">&Sigma;X<sup>2</sup></th>
+                                            <th class="font-weight-bold text-uppercase text-secondary text-m font-weight-bolder">&Sigma;X.Y</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="text-center">
+                                            <th>&Sigma;Y</th>
+                                            <th>&Sigma;X</th>
+                                            <th>&Sigma;X<sup>2</sup></th>
+                                            <th>&Sigma;X.Y</th>
+                                        </tr>
+                                    </tbody>
+                                </table>
                         </div>
 
-                        @if (isset($predictions))
-                            <h2>Prediksi Harga untuk {{ $nama_bahan }}</h2>
-                            <table class="table-responsive">
-                                <thead class="table table-bordered table-striped">
-                                    <tr>
-                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Bulan</th>
-                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tahun</th>
-                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Prediksi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($predictions as $prediction)
-                                        <tr>
-                                            <td>{{ $prediction['bulan'] }}</td>
-                                            <td>{{ $prediction['tahun'] }}</td>
-                                            <td>{{ $prediction['predicted_price'] }}</td>
+                        <br><br>
+                        <p class="mb-0 font-weight-bold">Nilai a dan Nilai b</p>
+                        <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr class="text-center">
+                                            <th class="font-weight-bold ">Nilai a</th>
+                                            <th class="font-weight-bold ">Nilai b</th>
                                         </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        @endif
+                                    </thead>
+                                    <tbody>
+                                        <tr class="text-center">
+                                            <th>data</th>
+                                            <th>data</th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                        </div>
+                        <br><br>
+                        <p class="mb-0 font-weight-bold">Perhitungan MAPE</p>
+                        <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr class="text-center">
+                                            <th class="font-weight-bold ">Bulan</th>
+                                            <th class="font-weight-bold ">Tahun</th>
+                                            <th class="font-weight-bold ">Harga Aktual</th>
+                                            <th class="font-weight-bold ">Harga Prediksi</th>
+                                            <th class="font-weight-bold ">|Y-Y'|/Y Error</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="text-center">
+                                            <th>data</th>
+                                            <th>data</th>
+                                            <th>data</th>
+                                            <th>data</th>
+                                            <th>data</th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                        </div>
+                        <br><br>
+                        <p class="mb-0 font-weight-bold">Hasil Prediksi</p>
+                        <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr class="text-center">
+                                            <th class="font-weight-bold ">Bulan</th>
+                                            <th class="font-weight-bold ">Tahun</th>
+                                            <th class="font-weight-bold ">Hasil Prediksi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="text-center">
+                                            <th>data</th>
+                                            <th>data</th>
+                                            <th>data</th>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                        </div>
                     </div>
                 </div>
             </div>

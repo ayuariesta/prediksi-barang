@@ -18,9 +18,9 @@ class CreateBahanPanganTable extends Migration
             $table->integer('kategori_id')->unsigned()->nullable();
             $table->foreign('kategori_id')->references('id')->on('kategori')->onDelete('cascade')->onUpdate('cascade');
             $table->string('nama_bahan')->nullable();
-            $table->string('bulan')->nullable();
+            $table->integer('bulan')->nullable();
             $table->integer('tahun')->nullable();
-            $table->integer('harga', );
+            $table->decimal('harga');
         });
     }
 
