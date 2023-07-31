@@ -85,10 +85,12 @@
                                             <td style="text-align: center;">{{$totalXy}}</td>
                                         </tr>
                                     </tfoot>
-                                    @php 
-                                         $dataA = $totalHarga / count($tableData);
-                                         $dataB = $totalXy / $totalXpangkatDua;
-                                    @endphp
+                                    @if(count($request->all()) > 0)
+                                        @php 
+                                             $dataA = $totalHarga / count($tableData);
+                                             $dataB = $totalXy / $totalXpangkatDua;
+                                        @endphp
+                                    @endif
                                 </table>
                         </div>
                         <br>
@@ -192,14 +194,18 @@
                                     <thead>
                                         <tr class="text-center">
                                             <th class="font-weight-bold">
-                                            MAPE = SUM(|Y-Y'|/Y Error)/Total Data*100 | MAPE = {{$sumErrorYx}} / {{count($tableData)}} x 100
-                                        </th>
+                                                @if(count($request->all()) > 0)
+                                                MAPE = SUM(|Y-Y'|/Y Error)/Total Data*100 | MAPE = {{$sumErrorYx}} / {{count($tableData)}} x 100
+                                                @endif
+                                            </th>
 
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr class="text-center">
+                                            @if(count($request->all()) > 0)
                                             <th>{{$sumErrorYx / count($tableData) * 100}}</th>
+                                            @endif
                                         </tr>
                                     </tbody>
                                 </table>
@@ -217,6 +223,7 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @if(count($request->all()) > 0)
                                         @php
                                             $median = count($tableData) / 2; 
                                             $monthNames = [
@@ -244,6 +251,7 @@
                                             </td>
                                         </tr>
                                         @endforeach
+                                        @endif
                                     </tbody>
                                 </table>
                         </div>

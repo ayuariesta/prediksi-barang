@@ -8,13 +8,13 @@ use Yajra\DataTables\DataTables;
 
 class PrediksiController extends Controller
 {
-    public function form()
+    public function form(Request $request)
     {
 
         $data_bahan = BahanPangan::select('nama_bahan')->distinct()->pluck('nama_bahan');
         $tableData = [];
 
-        return view('pages.prediksi', ['data_bahan' => $data_bahan, 'tableData' => $tableData]);
+        return view('pages.prediksi', ['data_bahan' => $data_bahan,'request'=>$request, 'tableData' => $tableData]);
 
     }
 
@@ -29,7 +29,7 @@ class PrediksiController extends Controller
         $tableData = $this->calculateValues($nama_bahan);
         $tableData = $tableData['data'];
         $data_bahan = BahanPangan::select('nama_bahan')->distinct()->pluck('nama_bahan');
-        return view('pages.prediksi', compact('nama_bahan', 'data_bahan', 'tableData'));
+        return view('pages.prediksi', compact('nama_bahan', 'data_bahan', 'tableData','request'));
     }
 
     public function calculateValues($nama_bahan)
@@ -60,7 +60,7 @@ class PrediksiController extends Controller
                 $index = $start - $i; // loop keatas
                 if($i == 0)
                 {
-                    $xAtas = 1;
+                    $xAtas = 0;
                 }else
                 {
                     $xAtas += -1;
