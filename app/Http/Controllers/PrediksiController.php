@@ -133,18 +133,6 @@ class PrediksiController extends Controller
                 $dataHistori[$index]['harga_aktual'] = $dataHistori[$index]['harga'];
             }
         }
-        //dd($dataHistori);
-        // Combine the $xValues, $xSquaredValues, and $xyValues arrays to be displayed in the table
-        // foreach ($dataHistori as $index => $data) {
-        //     $tableData[] = [
-        //         'bulan' => $data->bulan,
-        //         'tahun' => $data->tahun,
-        //         'harga_aktual' => $data->harga,
-        //         'x' => $xValues[$index],
-        //         'x_squared' => $xSquaredValues[$index],
-        //         'xy' => $xyValues[$index],
-        //     ];
-        // }
         return $dataHistori;
     }
 }
