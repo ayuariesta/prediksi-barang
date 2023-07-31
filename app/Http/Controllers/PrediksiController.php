@@ -27,7 +27,7 @@ class PrediksiController extends Controller
         $nama_bahan = $request->input('nama_bahan');
 
         $tableData = $this->calculateValues($nama_bahan);
-
+        $tableData = $tableData['data'];
         $data_bahan = BahanPangan::select('nama_bahan')->distinct()->pluck('nama_bahan');
         return view('pages.prediksi', compact('nama_bahan', 'data_bahan', 'tableData'));
     }
@@ -133,6 +133,8 @@ class PrediksiController extends Controller
                 $dataHistori[$index]['harga_aktual'] = $dataHistori[$index]['harga'];
             }
         }
-        return $dataHistori;
+        $arr = [];
+        $arr['data'] = $dataHistori;
+        return $arr;
     }
 }

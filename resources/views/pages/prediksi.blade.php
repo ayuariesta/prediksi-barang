@@ -43,6 +43,8 @@
                                          $totalX = 0;
                                          $dataA = 0;
                                          $dataB = 0;
+                                         $lastX = 0;
+                                         $yearLast = 0;
                                     @endphp
                                     @foreach ($tableData as $data)
                                             <tr class="text-center">
@@ -68,6 +70,8 @@
                                                     $totalXpangkatDua += $data['x_squared'];
                                                     $totalXy += $data['xy'];
                                                     $totalX += $data['x'];
+                                                    $lastX = $data['x'];
+                                                    $yearLast = $data['tahun'];
                                                 @endphp
                                             </tr>
                                         @endforeach
@@ -83,7 +87,7 @@
                                     </tfoot>
                                     @php 
                                          $dataA = $totalHarga / count($tableData);
-                                         $dataB = $totalXy / count($tableData);
+                                         $dataB = $totalXy / $totalXpangkatDua;
                                     @endphp
                                 </table>
                         </div>
@@ -150,12 +154,52 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @php $sumErrorYx = 0; @endphp
+                                        @foreach ($tableData as $dataMape)
                                         <tr class="text-center">
-                                            <th>data</th>
-                                            <th>data</th>
-                                            <th>data</th>
-                                            <th>data</th>
-                                            <th>data</th>
+                                            <td>
+                                                 @php
+                                                    $monthNames = [
+                                                        1 => 'Januari', 2 => 'Februari', 3 => 'Maret',
+                                                        4 => 'April', 5 => 'Mei', 6 => 'Juni',
+                                                        7 => 'Juli', 8 => 'Agustus', 9 => 'September',
+                                                        10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+                                                    ];
+                                                    $bulan = $monthNames[$dataMape['bulan']];
+                                                @endphp
+                                                {{ $bulan }}
+                                            </td>
+                                            <td>{{ $dataMape['tahun'] }}</td>
+                                            <td>Rp {{ number_format($dataMape['harga_aktual'], 0, ',', '.') }}</td>
+                                            <td>
+                                                @php $prediksi = $dataA + ($dataB * $dataMape['x']); @endphp
+                                                Rp {{ number_format($prediksi, 0, ',', '.') }}
+                                            </td>
+                                            <td>
+                                                @php $erroYX = (abs($dataMape['harga_aktual'] - $prediksi)) / $dataMape['harga_aktual']; @endphp
+                                                {{$erroYX}}
+                                                @php $sumErrorYx += $erroYX; @endphp
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                        </div>
+                        <br><br>
+                         <p class="mb-0 font-weight-bold">MAPE</p>
+                         <div class="table-responsive">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <tr class="text-center">
+                                            <th class="font-weight-bold">
+                                            MAPE = SUM(|Y-Y'|/Y Error)/Total Data*100 | MAPE = {{$sumErrorYx}} / {{count($tableData)}} x 100
+                                        </th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr class="text-center">
+                                            <th>{{$sumErrorYx / count($tableData) * 100}}</th>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -168,15 +212,38 @@
                                         <tr class="text-center">
                                             <th class="font-weight-bold ">Bulan</th>
                                             <th class="font-weight-bold ">Tahun</th>
+                                            <th class="font-weight-bold ">X</th>
                                             <th class="font-weight-bold ">Hasil Prediksi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
+                                        @php
+                                            $median = count($tableData) / 2; 
+                                            $monthNames = [
+                                                    1 => 'Januari', 2 => 'Februari', 3 => 'Maret',
+                                                    4 => 'April', 5 => 'Mei', 6 => 'Juni',
+                                                    7 => 'Juli', 8 => 'Agustus', 9 => 'September',
+                                                    10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+                                                ];
+                                        @endphp
+                                        @foreach($monthNames as  $key => $item)
                                         <tr class="text-center">
-                                            <th>data</th>
-                                            <th>data</th>
-                                            <th>data</th>
+                                            <td>{{$item}}</td>
+                                            <td>{{$yearLast + 1}}</td>
+                                            <td>
+                                                @if($median % 2 == 1)
+                                                    @php $lastX += 1; @endphp
+                                                @else
+                                                    @php $lastX += 2; @endphp
+                                                @endif
+                                                {{$lastX}}
+                                            </td>
+                                            <td>
+                                                @php $prediksi = $dataA + ($dataB * $lastX); @endphp
+                                                Rp {{ number_format($prediksi, 0, ',', '.') }}
+                                            </td>
                                         </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                         </div>
