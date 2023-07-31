@@ -37,6 +37,13 @@
                                         </tr>
                                     </thead>
                                     <tbody>
+                                    @php $totalHarga = 0;
+                                         $totalXpangkatDua = 0;
+                                         $totalXy = 0;
+                                         $totalX = 0;
+                                         $dataA = 0;
+                                         $dataB = 0;
+                                    @endphp
                                     @foreach ($tableData as $data)
                                             <tr class="text-center">
                                                 <td>
@@ -56,9 +63,28 @@
                                                 <td>{{ $data['x'] }}</td>
                                                 <td>{{ $data['x_squared'] }}</td>
                                                 <td>{{ $data['xy'] }}</td>
+                                                @php 
+                                                    $totalHarga += $data['harga_aktual'];
+                                                    $totalXpangkatDua += $data['x_squared'];
+                                                    $totalXy += $data['xy'];
+                                                    $totalX += $data['x'];
+                                                @endphp
                                             </tr>
                                         @endforeach
                                     </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td style="text-align: right;" colspan="2">Total</td>
+                                            <td style="text-align: center;">{{number_format($totalHarga, 0, ',', '.')}}</td>
+                                            <td></td>
+                                            <td style="text-align: center;">{{$totalXpangkatDua}}</td>
+                                            <td style="text-align: center;">{{$totalXy}}</td>
+                                        </tr>
+                                    </tfoot>
+                                    @php 
+                                         $dataA = $totalHarga / count($tableData);
+                                         $dataB = $totalXy / count($tableData);
+                                    @endphp
                                 </table>
                         </div>
                         <br>
@@ -73,14 +99,22 @@
                                             <th class="font-weight-bold text-uppercase text-secondary text-m font-weight-bolder">&Sigma;X.Y</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
+                                     <tbody>
+                                        <tr class="text-center">
+                                            <td>{{$totalHarga}}</td>
+                                            <td>{{$totalX}}</td>
+                                            <td>{{$totalXpangkatDua}}</td>
+                                            <td>{{$totalXy}}</td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot>
                                         <tr class="text-center">
                                             <th>&Sigma;Y</th>
                                             <th>&Sigma;X</th>
                                             <th>&Sigma;X<sup>2</sup></th>
                                             <th>&Sigma;X.Y</th>
                                         </tr>
-                                    </tbody>
+                                    </tfoot>
                                 </table>
                         </div>
 
@@ -96,8 +130,8 @@
                                     </thead>
                                     <tbody>
                                         <tr class="text-center">
-                                            <th>data</th>
-                                            <th>data</th>
+                                            <th>{{$dataA}}</th>
+                                            <th>{{$dataB}}</th>
                                         </tr>
                                     </tbody>
                                 </table>
