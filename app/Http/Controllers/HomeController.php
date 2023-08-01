@@ -21,4 +21,9 @@ class HomeController extends Controller
     {
         return view('pages.dashboard');
     }
+
+    public function index1()
+    {
+        return view('pages.dashboard-user');
+    }
 }

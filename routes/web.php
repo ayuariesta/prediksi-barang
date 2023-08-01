@@ -20,11 +20,17 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UserProfileController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\BahanPanganController;
+use App\Http\Controllers\HargaBahanController;
 use App\Http\Controllers\PrediksiController;
+use App\Http\Controllers\PrediksiUserController;
 use App\Http\Controllers\ResetPassword;
 use App\Http\Controllers\ChangePassword;
 
-Route::get('/', function () {return redirect('/dashboard');})->middleware('auth');
+Route::get('/', [HomeController::class, 'index1'])->middleware('guest')->name('home-user');
+Route::get('/bahan-pangan-user', [HargaBahanController::class, 'index'])->middleware('guest')->name('bahan-pangan-user');
+Route::get('/prediksi-user', [PrediksiUserController::class, 'form'])->middleware('guest')->name('prediksi-user');
+Route::post('/prediksi-user', [PrediksiUserController::class, 'prediksiHarga'])->middleware('guest')->name('harga-prediksi');
+Route::get('/admin', function () {return redirect('/dashboard');})->middleware('auth');
 	Route::get('/register', [RegisterController::class, 'create'])->middleware('guest')->name('register');
 	Route::post('/register', [RegisterController::class, 'store'])->middleware('guest')->name('register.perform');
 	Route::get('/login', [LoginController::class, 'show'])->middleware('guest')->name('login');

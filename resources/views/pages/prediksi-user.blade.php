@@ -1,7 +1,7 @@
-@extends('layouts.app', ['class' => 'g-sidenav-show bg-gray-100'])
+@extends('layouts.app-user', ['class' => 'g-sidenav-show bg-gray-100'])
 
 @section('content')
-    @include('layouts.navbars.auth.topnav', ['title' => 'Prediksi'])
+    @include('layouts.navbars.guest.topnav', ['title' => 'Prediksi'])
     <div class="container-fluid py-4">
         <div class="row">
             <div class="col-md-14">
@@ -12,7 +12,7 @@
                         </div>
                     </div>
                     <div class="card-body">
-                    <form action="{{ route('prediksi-harga') }}" method="POST">
+                    <form action="{{ route('harga-prediksi') }}" method="POST">
                         @csrf
                         <label for="nama_bahan">Pilih Nama Bahan:</label>
                         <select class="form-select" name="nama_bahan" id="nama_bahan">
@@ -34,6 +34,7 @@
                             </div>
                         @endif
                         <br>
+                        
                         <div class="table-responsive">
                                 <table class="table table-bordered table-striped">
                                     <thead>
@@ -123,104 +124,9 @@
                                             <td>{{$totalXy}}</td>
                                         </tr>
                                     </tbody>
-                                    <tfoot>
-                                        <tr class="text-center">
-                                            <th>&Sigma;Y</th>
-                                            <th>&Sigma;X</th>
-                                            <th>&Sigma;X<sup>2</sup></th>
-                                            <th>&Sigma;X.Y</th>
-                                        </tr>
-                                    </tfoot>
                                 </table>
                         </div>
-
-                        <br><br>
-                        <p class="mb-0 font-weight-bold">Nilai a dan Nilai b</p>
-                        <div class="table-responsive">
-                                <table class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr class="text-center">
-                                            <th class="font-weight-bold ">Nilai a</th>
-                                            <th class="font-weight-bold ">Nilai b</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="text-center">
-                                            <th>{{$dataA}}</th>
-                                            <th>{{$dataB}}</th>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                        </div>
-                        <br><br>
-                        <p class="mb-0 font-weight-bold">Perhitungan MAPE</p>
-                        <div class="table-responsive">
-                                <table class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr class="text-center">
-                                            <th class="font-weight-bold ">Bulan</th>
-                                            <th class="font-weight-bold ">Tahun</th>
-                                            <th class="font-weight-bold ">Harga Aktual</th>
-                                            <th class="font-weight-bold ">Harga Prediksi</th>
-                                            <th class="font-weight-bold ">|Y-Y'|/Y Error</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @php $sumErrorYx = 0; @endphp
-                                        @foreach ($tableData as $dataMape)
-                                        <tr class="text-center">
-                                            <td>
-                                                 @php
-                                                    $monthNames = [
-                                                        1 => 'Januari', 2 => 'Februari', 3 => 'Maret',
-                                                        4 => 'April', 5 => 'Mei', 6 => 'Juni',
-                                                        7 => 'Juli', 8 => 'Agustus', 9 => 'September',
-                                                        10 => 'Oktober', 11 => 'November', 12 => 'Desember'
-                                                    ];
-                                                    $bulan = $monthNames[$dataMape['bulan']];
-                                                @endphp
-                                                {{ $bulan }}
-                                            </td>
-                                            <td>{{ $dataMape['tahun'] }}</td>
-                                            <td>Rp {{ number_format($dataMape['harga_aktual'], 0, ',', '.') }}</td>
-                                            <td>
-                                                @php $prediksi = $dataA + ($dataB * $dataMape['x']); @endphp
-                                                Rp {{ number_format($prediksi, 0, ',', '.') }}
-                                            </td>
-                                            <td>
-                                                @php $erroYX = (abs($dataMape['harga_aktual'] - $prediksi)) / $dataMape['harga_aktual']; @endphp
-                                                {{$erroYX}}
-                                                @php $sumErrorYx += $erroYX; @endphp
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                        </div>
-                        <br><br>
-                         <p class="mb-0 font-weight-bold">MAPE</p>
-                         <div class="table-responsive">
-                                <table class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr class="text-center">
-                                            <th class="font-weight-bold">
-                                                @if(count($request->all()) > 0)
-                                                MAPE = SUM(|Y-Y'|/Y Error)/Total Data*100 | MAPE = {{$sumErrorYx}} / {{count($tableData)}} x 100
-                                                @endif
-                                            </th>
-
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr class="text-center">
-                                            @if(count($request->all()) > 0)
-                                            <th>{{$sumErrorYx / count($tableData) * 100}}</th>
-                                            @endif
-                                        </tr>
-                                    </tbody>
-                                </table>
-                        </div>
-                        <br><br>
+                        <br>
                         <p class="mb-0 font-weight-bold">Hasil Prediksi</p>
                         <div class="table-responsive">
                                 <table class="table table-bordered table-striped">
@@ -269,6 +175,6 @@
                 </div>
             </div>
         </div>
-        @include('layouts.footers.auth.footer')
+        @include('layouts.footers.guest.footer')
     </div>
 @endsection
