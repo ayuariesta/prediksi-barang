@@ -34,7 +34,6 @@ class PrediksiController extends Controller
 
     public function calculateValues($nama_bahan)
     {
-        // Retrieve data from your database or data source based on the selected nama_bahan
         $dataHistori = BahanPangan::where('nama_bahan', $nama_bahan)
             ->orderBy('tahun', 'asc')
             ->orderBy('bulan', 'asc')

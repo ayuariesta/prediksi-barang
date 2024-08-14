@@ -54,3 +54,16 @@
         </section>
     </main>
 @endsection
+@push('js')
+<script>
+    function togglePassword() {
+        var passwordField = document.getElementById("password");
+        var passwordFieldType = passwordField.type;
+        if (passwordFieldType === "password") {
+            passwordField.type = "text";
+        } else {
+            passwordField.type = "password";
+        }
+    }
+</script>
+@endpush
