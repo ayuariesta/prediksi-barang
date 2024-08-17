@@ -12,19 +12,39 @@
                         </div>
                     </div>
                     <div class="card-body">
-                    <form action="{{ route('harga-prediksi') }}" method="POST">
-                        @csrf
-                        <label for="nama_bahan">Pilih Nama Bahan:</label>
-                        <select class="form-select" name="nama_bahan" id="nama_bahan">
-                            @foreach ($data_bahan as $bahan)
-                                <option value="{{ $bahan}}">{{ $bahan }}</option>
-                            @endforeach
-                        </select>
+                        <form action="{{ route('harga-prediksi') }}" method="POST">
+                            @csrf
+                            <div class="row">
+                                <div class="col-md-12 mb-1">
+                                    <label for="nama_bahan">Pilih Nama Bahan:</label>
+                                </div>
+                                <div class="col-md-12 mb-1">
+                                    <select class="form-select" name="nama_bahan" id="nama_bahan">
+                                        @foreach ($data_bahan as $bahan)
+                                            <option value="{{ $bahan }}">{{ $bahan }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="col-md-6 mb-1">
+                                    <div class="row">
+                                        <div class="col-md-4 text-center align-content-center">
+                                            <input class="form-control range-bahan" type="month" id="start_range_bahan"
+                                                name="start_range_bahan" min="2018-03" value="2018-05" />
+                                        </div>
+                                        <div class="col-md-2 text-center align-content-center">s/d</div>
+                                        <div class="col-md-4 text-center align-content-center">
+                                            <input class="form-control range-bahan" type="month" id="end_range_bahan"
+                                                name="end_range_bahan" min="2018-03" value="2018-05" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <button type="submit" class="btn btn-primary">Simpan</button>
+                                </div>
+                            </div>
+                        </form>
                         <br>
-                        <button type="submit" class="btn btn-primary">Simpan</button>
-                    </form>
-                        <br>
-                        @if(isset($nama_bahan))
+                        @if (isset($nama_bahan))
                             <div class="d-flex align-items-center">
                                 <p class="mb-0">Prediksi Bahan Pangan dengan Nama : {{ $nama_bahan }}</p>
                             </div>
@@ -34,147 +54,252 @@
                             </div>
                         @endif
                         <br>
-                        
+
                         <div class="table-responsive">
-                                <table class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr class="text-center">
-                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Bulan</th>
-                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Tahun</th>
-                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Harga Aktual</th>
-                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">X</th>
-                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">X<sup>2</sup></th>
-                                            <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">X.Y</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    @php $totalHarga = 0;
-                                         $totalXpangkatDua = 0;
-                                         $totalXy = 0;
-                                         $totalX = 0;
-                                         $dataA = 0;
-                                         $dataB = 0;
-                                         $lastX = 0;
-                                         $yearLast = 0;
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr class="text-center">
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Bulan</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Tahun</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            Harga Aktual</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">X
+                                        </th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">
+                                            X<sup>2</sup></th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">X.Y
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @php
+                                        $totalHarga = 0;
+                                        $totalXpangkatDua = 0;
+                                        $totalXy = 0;
+                                        $totalX = 0;
+                                        $dataA = 0;
+                                        $dataB = 0;
+                                        $lastX = 0;
+                                        $yearLast = 0;
                                     @endphp
                                     @foreach ($tableData as $data)
-                                            <tr class="text-center">
-                                                <td>
+                                        <tr class="text-center">
+                                            <td>
                                                 @php
                                                     $monthNames = [
-                                                        1 => 'Januari', 2 => 'Februari', 3 => 'Maret',
-                                                        4 => 'April', 5 => 'Mei', 6 => 'Juni',
-                                                        7 => 'Juli', 8 => 'Agustus', 9 => 'September',
-                                                        10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+                                                        1 => 'Januari',
+                                                        2 => 'Februari',
+                                                        3 => 'Maret',
+                                                        4 => 'April',
+                                                        5 => 'Mei',
+                                                        6 => 'Juni',
+                                                        7 => 'Juli',
+                                                        8 => 'Agustus',
+                                                        9 => 'September',
+                                                        10 => 'Oktober',
+                                                        11 => 'November',
+                                                        12 => 'Desember',
                                                     ];
                                                     $bulan = $monthNames[$data['bulan']];
                                                 @endphp
                                                 {{ $bulan }}
-                                                </td>
-                                                <td>{{ $data['tahun'] }}</td>
-                                                <td>Rp {{ number_format($data['harga_aktual'], 0, ',', '.') }}</td>
-                                                <td>{{ $data['x'] }}</td>
-                                                <td>{{ $data['x_squared'] }}</td>
-                                                <td>{{ $data['xy'] }}</td>
-                                                @php 
-                                                    $totalHarga += $data['harga_aktual'];
-                                                    $totalXpangkatDua += $data['x_squared'];
-                                                    $totalXy += $data['xy'];
-                                                    $totalX += $data['x'];
-                                                    $lastX = $data['x'];
-                                                    $yearLast = $data['tahun'];
-                                                @endphp
-                                            </tr>
-                                        @endforeach
-                                    </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td style="text-align: right;" colspan="2">Total</td>
-                                            <td style="text-align: center;">{{number_format($totalHarga, 0, ',', '.')}}</td>
-                                            <td></td>
-                                            <td style="text-align: center;">{{$totalXpangkatDua}}</td>
-                                            <td style="text-align: center;">{{$totalXy}}</td>
+                                            </td>
+                                            <td>{{ $data['tahun'] }}</td>
+                                            <td>Rp {{ number_format($data['harga_aktual'], 0, ',', '.') }}</td>
+                                            <td>{{ $data['x'] }}</td>
+                                            <td>{{ $data['x_squared'] }}</td>
+                                            <td>{{ $data['xy'] }}</td>
+                                            @php
+                                                $totalHarga += $data['harga_aktual'];
+                                                $totalXpangkatDua += $data['x_squared'];
+                                                $totalXy += $data['xy'];
+                                                $totalX += $data['x'];
+                                                $lastX = $data['x'];
+                                                $yearLast = $data['tahun'];
+                                            @endphp
                                         </tr>
-                                    </tfoot>
-                                    @if(count($request->all()) > 0)
-                                        @php 
-                                             $dataA = $totalHarga / count($tableData);
-                                             $dataB = $totalXy / $totalXpangkatDua;
-                                        @endphp
-                                    @endif
-                                </table>
+                                    @endforeach
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td style="text-align: right;" colspan="2">Total</td>
+                                        <td style="text-align: center;">{{ number_format($totalHarga, 0, ',', '.') }}</td>
+                                        <td></td>
+                                        <td style="text-align: center;">{{ $totalXpangkatDua }}</td>
+                                        <td style="text-align: center;">{{ $totalXy }}</td>
+                                    </tr>
+                                </tfoot>
+                                @if (count($request->all()) > 0)
+                                    @php
+                                        $dataA = $totalHarga / count($tableData);
+                                        $dataB = $totalXy / $totalXpangkatDua;
+                                    @endphp
+                                @endif
+                            </table>
                         </div>
                         <br>
                         <p class="mb-0 font-weight-bold">Nilai &Sigma;Y, &Sigma;X, &Sigma;X<sup>2</sup>, &Sigma;X.Y</p>
                         <div class="table-responsive">
-                                <table class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr class="text-center">
-                                            <th class="font-weight-bold text-uppercase text-secondary text-m font-weight-bolder">&Sigma;Y</th>
-                                            <th class="font-weight-bold text-uppercase text-secondary text-m font-weight-bolder">&Sigma;X</th>
-                                            <th class="font-weight-bold text-uppercase text-secondary text-m font-weight-bolder">&Sigma;X<sup>2</sup></th>
-                                            <th class="font-weight-bold text-uppercase text-secondary text-m font-weight-bolder">&Sigma;X.Y</th>
-                                        </tr>
-                                    </thead>
-                                     <tbody>
-                                        <tr class="text-center">
-                                            <td>{{$totalHarga}}</td>
-                                            <td>{{$totalX}}</td>
-                                            <td>{{$totalXpangkatDua}}</td>
-                                            <td>{{$totalXy}}</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr class="text-center">
+                                        <th
+                                            class="font-weight-bold text-uppercase text-secondary text-m font-weight-bolder">
+                                            &Sigma;Y</th>
+                                        <th
+                                            class="font-weight-bold text-uppercase text-secondary text-m font-weight-bolder">
+                                            &Sigma;X</th>
+                                        <th
+                                            class="font-weight-bold text-uppercase text-secondary text-m font-weight-bolder">
+                                            &Sigma;X<sup>2</sup></th>
+                                        <th
+                                            class="font-weight-bold text-uppercase text-secondary text-m font-weight-bolder">
+                                            &Sigma;X.Y</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr class="text-center">
+                                        <td>{{ $totalHarga }}</td>
+                                        <td>{{ $totalX }}</td>
+                                        <td>{{ $totalXpangkatDua }}</td>
+                                        <td>{{ $totalXy }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                         <br>
                         <p class="mb-0 font-weight-bold">Hasil Prediksi</p>
                         <div class="table-responsive">
-                                <table class="table table-bordered table-striped">
-                                    <thead>
-                                        <tr class="text-center">
-                                            <th class="font-weight-bold ">Bulan</th>
-                                            <th class="font-weight-bold ">Tahun</th>
-                                            <th class="font-weight-bold ">X</th>
-                                            <th class="font-weight-bold ">Hasil Prediksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @if(count($request->all()) > 0)
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                    <tr class="text-center">
+                                        <th class="font-weight-bold ">Bulan</th>
+                                        <th class="font-weight-bold ">Tahun</th>
+                                        <th class="font-weight-bold ">X</th>
+                                        <th class="font-weight-bold ">Hasil Prediksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (count($request->all()) > 0)
                                         @php
-                                            $median = count($tableData) / 2; 
+                                            $median = count($tableData) / 2;
                                             $monthNames = [
-                                                    1 => 'Januari', 2 => 'Februari', 3 => 'Maret',
-                                                    4 => 'April', 5 => 'Mei', 6 => 'Juni',
-                                                    7 => 'Juli', 8 => 'Agustus', 9 => 'September',
-                                                    10 => 'Oktober', 11 => 'November', 12 => 'Desember'
-                                                ];
+                                                1 => 'Januari',
+                                                2 => 'Februari',
+                                                3 => 'Maret',
+                                                4 => 'April',
+                                                5 => 'Mei',
+                                                6 => 'Juni',
+                                                7 => 'Juli',
+                                                8 => 'Agustus',
+                                                9 => 'September',
+                                                10 => 'Oktober',
+                                                11 => 'November',
+                                                12 => 'Desember',
+                                            ];
                                         @endphp
-                                        @foreach($monthNames as  $key => $item)
-                                        <tr class="text-center">
-                                            <td>{{$item}}</td>
-                                            <td>{{$yearLast + 1}}</td>
-                                            <td>
-                                                @if($median % 2 == 1)
-                                                    @php $lastX += 1; @endphp
-                                                @else
-                                                    @php $lastX += 2; @endphp
-                                                @endif
-                                                {{$lastX}}
-                                            </td>
-                                            <td>
-                                                @php $prediksi = $dataA + ($dataB * $lastX); @endphp
-                                                Rp {{ number_format($prediksi, 0, ',', '.') }}
-                                            </td>
-                                        </tr>
+                                        @foreach ($monthNames as $key => $item)
+                                            <tr class="text-center">
+                                                <td>{{ $item }}</td>
+                                                <td>{{ $yearLast + 1 }}</td>
+                                                <td>
+                                                    @if ($median % 2 == 1)
+                                                        @php $lastX += 1; @endphp
+                                                    @else
+                                                        @php $lastX += 2; @endphp
+                                                    @endif
+                                                    {{ $lastX }}
+                                                </td>
+                                                <td>
+                                                    @php $prediksi = $dataA + ($dataB * $lastX); @endphp
+                                                    Rp {{ number_format($prediksi, 0, ',', '.') }}
+                                                </td>
+                                            </tr>
                                         @endforeach
-                                        @endif
-                                    </tbody>
-                                </table>
+                                    @endif
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+        <script type="text/javascript">
+            initRangeWaktuBahan();
+
+            $('#nama_bahan').on('change', function() {
+                initRangeWaktuBahan();
+            })
+
+            function calendarDiff(date1, date2) {
+                var later = false;
+
+                if (date1 > date2) {
+                    later = true;
+                    var temp = date2;
+                    date2 = date1;
+                    date1 = temp;
+                }
+                date1 = date1.split("-");
+                var y1 = date1[0],
+                    m1 = date1[1],
+                    d1 = date1[2];
+                date2 = date2.split("-");
+                var y2 = date2[0],
+                    m2 = date2[1],
+                    d2 = date2[2];
+
+                if ((d2 -= d1) < 0) {
+                    d2 += new Date(y1, m1, 0).getDate(); // *note
+                    ++m1;
+                }
+                if ((m2 -= m1) < 0) {
+                    m2 += 12;
+                    ++y1;
+                }
+                y2 = y2 - y1;
+                return {
+                    years: y2,
+                    months: m2,
+                    days: d2,
+                    later: later
+                };
+            }
+
+            $('.range-bahan').on('change', function() {
+                let start_momenth = moment($('#start_range_bahan').val());
+                let end_momenth = moment($('#end_range_bahan').val());
+                if (end_momenth.diff(start_momenth, 'days') < 0) {
+                    $('#start_range_bahan').val($('#end_range_bahan').val())
+                }
+            });
+
+            function initRangeWaktuBahan() {
+                try {
+                    $.post("api/rentang-waktu-bahan", {
+                            nama_bahan: $('#nama_bahan').val(),
+                        },
+                        function(data, status) {
+                            console.log(data);
+                            let start_waktu = data.year.start.toString().padStart(4, '0') + '-' + data.month.start
+                                .toString().padStart(2, "0");
+                            let end_waktu = data.year.end.toString().padStart(4, '0') + '-' + data.month.end.toString()
+                                .padStart(2, "0");
+                            $('#start_range_bahan').attr('min', start_waktu);
+                            $('#start_range_bahan').attr('max', end_waktu);
+                            // $('#start_range_bahan').val(start_waktu);
+
+                            $('#end_range_bahan').attr('min', start_waktu);
+                            $('#end_range_bahan').attr('max', end_waktu);
+                            // $('#end_range_bahan').val(end_waktu);
+                        });
+                } catch (err) {
+                    console.log(err);
+                }
+            }
+        </script>
         @include('layouts.footers.guest.footer')
     </div>
 @endsection
