@@ -60,7 +60,7 @@
         <div class="modal fade" id="importBahan" tabindex="-1" aria-labelledby="importBahanLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
-                    <form method="POST" action="{{ route('bahan-save') }}" enctype="multipart/form-data">
+                    <form method="POST" action="{{ route('bahan-import') }}" enctype="multipart/form-data">
                         @csrf
                         <div class="modal-header">
                             <h5 class="modal-title" id="importBahanLabel">Import Bahan Pangan</h5>
@@ -70,7 +70,7 @@
                             <div class="row">
                                 <div class="col-md-12 mb-3">
                                     <input type="file" class="form-control" name="xlsx_file_bahan" id="xlsx_file_bahan"
-                                        accept="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                                        accept=".xlsx">
                                 </div>
                                 <div class="col-md-12">
                                     <button type="button" class="btn btn-sm btn-primary" id="download_file_sample">Download

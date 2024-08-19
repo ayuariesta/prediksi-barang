@@ -43,6 +43,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::post('/prediksi', [PrediksiController::class, 'prediksiHarga'])->name('prediksi-harga');
 	Route::get('/bahan-pangan', [BahanPanganController::class, 'index'])->name('bahan-pangan');
 	Route::post('/bahan-pangan',  [BahanPanganController::class, 'save'])->name('bahan-save');
+	Route::post('/bahan-pangan-import',  [BahanPanganController::class, 'importBahanPangan'])->name('bahan-import');
 	Route::get('/bahan-pangan/hapus/{id}', [BahanPanganController::class, 'delete'])->name('bahan-hapus');
 	Route::get('/bahan-pangan/edit/{id}', [BahanPanganController::class, 'edit'])->name('bahan-edit');
     Route::post('/bahan-pangan/edit/{id}', [BahanPanganController::class, 'update'])->name('bahan-update');

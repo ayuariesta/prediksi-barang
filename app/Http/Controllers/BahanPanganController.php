@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\BahanPanganImport;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\BahanPangan;
 use App\Models\Kategori;
 use Auth;
+use Maatwebsite\Excel\Facades\Excel;
 use Response;
 use Yajra\DataTables\DataTables;
 
@@ -101,5 +104,82 @@ class BahanPanganController extends Controller
         );
 
         return Response::download($file, 'sample.xlsx', $headers);
+    }
+    public function importBahanPangan(Request $request)
+    {
+        try {
+            $request->validate([
+                'xlsx_file_bahan' => ['required', 'file', function ($attribute, $value, $fail) {
+                    $allowedExtensions = ['xlsx', 'xls'];
+                    $extension = $value->getClientOriginalExtension();
+
+                    if (!in_array($extension, $allowedExtensions)) {
+                        $fail("$attribute Harus ber ekstensi: " . implode(', ', $allowedExtensions) . '.');
+                    }
+
+                }],
+            ]);
+
+            $import = new BahanPanganImport;
+
+            $file = $request->file('xlsx_file_bahan');
+
+            Excel::import($import, $file->getRealPath(), null, \Maatwebsite\Excel\Excel::XLSX);
+
+            $data = $import->getData();
+            $sheet1 = $data[0];
+            $headers = $sheet1[0];
+            $headers_exp = [];
+            for ($i = 2; $i < count($headers); $i++) {
+                $exp_val = explode(' ', $headers[$i]);
+                $headers_exp[] = [
+                    'tahun' => $exp_val[2],
+                    'bulan' => $exp_val[0]
+                ];
+            }
+            // dd($headers_exp);
+            $bahan_imp = [];
+            for ($i = 1; $i < count($sheet1); $i++) {
+                $ib_harga = [];
+                for ($ib = 0; $ib <= count($sheet1[$i]); $ib++) {
+                    if ($ib < count($headers_exp)) {
+                        $ib_harga[] = array(
+                            'tahun' => $headers_exp[$ib]['tahun'],
+                            'bulan' => $headers_exp[$ib]['bulan'],
+                            'harga' => $sheet1[$i][$ib + 2]
+                        );
+                    }
+                }
+                $bahan_imp[] = [
+                    'kategori' => $sheet1[$i][0],
+                    'nm_bahan' => $sheet1[$i][1],
+                    'harga' => $ib_harga
+                ];
+            }
+            $BahanPanganModel = [];
+            foreach ($bahan_imp as $key => $val) {
+                foreach ($val['harga'] as $key2 => $val2) {
+                    if (doubleval($val2['harga']) && !is_string($val2['harga']) && $val2['harga'] != 0) {
+                        $BahanPanganModel[] = array(
+                            'kategori_id' => $val['kategori'],
+                            'nama_bahan' => $val['nm_bahan'],
+                            'bulan' => $val2['bulan'],
+                            'tahun' => $val2['tahun'],
+                            'harga' => $val2['harga']
+                        );
+                    }
+
+                }
+            }
+
+            $error = null;
+            return view('pages.bahan-pangan-view-import', compact('BahanPanganModel', 'error'));
+        } catch (Exception $e) {
+            $BahanPanganModel = [];
+            $error = 'Pastikan Format yang di isikan sesuai dengan contoh.';
+            return view('pages.bahan-pangan-view-import', compact('BahanPanganModel', 'error'));
+        }
+
+
     }
 }
