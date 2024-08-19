@@ -13,7 +13,7 @@
                     </div>
                 </div>
             @else
-                <div class="col-12">
+                <div class="col-12 mb-3">
                     <div class="card mb-4">
                         <div class="card-body">
                             <div class="table-responsive">
@@ -41,7 +41,7 @@
                                         @foreach ($BahanPanganModel as $bahanPangan)
                                             <tr>
                                                 <td class="text-center">{{ $bahanPangan['nama_bahan'] }}</td>
-                                                <td class="text-center">{{ $bahanPangan['kategori_id'] }}</td>
+                                                <td class="text-center">{{ $bahanPangan['kategori'] }}</td>
                                                 <td class="text-center">{{ $bahanPangan['bulan'] }}</td>
                                                 <td class="text-center">{{ $bahanPangan['tahun'] }}</td>
                                                 <td class="text-center">{{ $bahanPangan['harga'] }}</td>
@@ -53,6 +53,9 @@
                         </div>
                     </div>
                 </div>
+                <div class=col-md-12>
+                    <button type="button" class="btn btn-primary" id="import_table"> Simpan </button>
+                </div>
             @endif
         </div>
         @include('layouts.footers.auth.footer')
@@ -60,10 +63,64 @@
 @endsection
 @push('js')
     <script type="text/javascript">
-        $('#download_file_sample').on('click', (e) => {
-            e.preventDefault();
-            window.location.href = "/download-sample";
+        $('#import_table').on('click', async (e) => {
+            var data_pangan = @json($BahanPanganModel);
+            await simpan(data_pangan, 0);
         });
+        /*
+        0,
+        1,
+        2
+        */
+
+        async function simpan(data_pangan, i) {
+            let max = data_pangan.length - 1;
+            if (i == max) {
+                alert('Data sukses di update / ditambahkan.');
+                window.location.replace("{{ route('bahan-pangan') }}");
+                return;
+            } else {
+                var data, xhr;
+
+                data = new FormData();
+                data.append('nama_bahan', data_pangan[i]['nama_bahan']);
+                data.append('kategori_id', data_pangan[i]['kategori_id']);
+                data.append('bulan', data_pangan[i]['bulan']);
+                data.append('tahun', data_pangan[i]['tahun']);
+                data.append('harga', data_pangan[i]['harga']);
+
+                await makeRequest(data);
+                await simpan(data_pangan, i + 1);
+            };
+        }
+
+        function makeRequest(data) {
+            return new Promise(function(resolve, reject) {
+                let xhr = new XMLHttpRequest();
+                xhr.open('POST', "{{ route('save-import') }}", true);
+                xhr.setRequestHeader(
+                    'X-CSRF-TOKEN', $('meta[name="csrf-token"]').attr('content')
+                );
+                xhr.onload = function() {
+                    if (this.status >= 200 && this.status < 300) {
+                        resolve(xhr.response);
+                    } else {
+                        reject({
+                            status: this.status,
+                            statusText: xhr.statusText
+                        });
+                    }
+                };
+                xhr.onerror = function() {
+                    reject({
+                        status: this.status,
+                        statusText: xhr.statusText
+                    });
+                };
+                xhr.send(data);
+            });
+        }
+
         $(function() {
             var table = $('#pangan-table').DataTable({
                 processing: false,

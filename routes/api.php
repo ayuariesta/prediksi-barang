@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\BahanPanganController;
 use App\Http\Controllers\PrediksiUserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;

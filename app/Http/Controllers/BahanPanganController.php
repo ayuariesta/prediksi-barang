@@ -88,6 +88,63 @@ class BahanPanganController extends Controller
         return redirect('bahan-pangan');
     }
 
+    public function save_update_pangan(Request $request)
+    {
+        $request->validate([
+            'kategori_id' => 'required',
+            'nama_bahan' => 'required',
+            'bulan' => 'required',
+            'tahun' => 'required',
+            'harga' => 'required',
+        ], [
+            'kategori_id.required' => 'Kategori tidak boleh kosong',
+            'nama_bahan.required' => 'Nama Bahan tidak boleh kosong',
+            'bulan.required' => 'Bulan tidak boleh kosong',
+            'tahun.required' => 'Tahun tidak boleh kosong',
+            'harga.required' => 'Harga tidak boleh kosong',
+        ],
+        );
+
+        $arr_bulan = [
+            'Jan' => 1,
+            'Feb' => 2,
+            'Mar' => 3,
+            'Apr' => 4,
+            'Mei' => 5,
+            'Jun' => 6,
+            'Jul' => 7,
+            'Agu' => 8,
+            'Sep' => 9,
+            'Okt' => 10,
+            'Nov' => 11,
+            'Des' => 12,
+        ];
+
+        $bahanpangan = BahanPangan::where('nama_bahan', $request->nama_bahan)
+            ->where('bulan', $request->bulan)
+            ->where('tahun', $request->tahun)
+            ->where('kategori_id', $request->kategori_id)
+            ->updateOrCreate([
+                'kategori_id' => $request->kategori_id,
+                'nama_bahan' => $request->nama_bahan,
+                'bulan' => $arr_bulan[$request->bulan],
+                'tahun' => $request->tahun,
+                'harga' => $request->harga,
+
+            ]
+            );
+
+        // $bahanpangan = new BahanPangan;
+        // $bahanpangan->kategori_id = $request->kategori_id;
+        // $bahanpangan->nama_bahan = $request->nama_bahan;
+        // $bahanpangan->bulan = $request->bulan;
+        // $bahanpangan->tahun = $request->tahun;
+        // $bahanpangan->harga = $request->harga;
+        // $bahanpangan->save();
+
+        echo json_encode(['is_success' => true, 'msg' => 'sukses']);
+    }
+
     public function delete($id)
     {
         $data = BahanPangan::find($id);
@@ -161,7 +218,8 @@ class BahanPanganController extends Controller
                 foreach ($val['harga'] as $key2 => $val2) {
                     if (doubleval($val2['harga']) && !is_string($val2['harga']) && $val2['harga'] != 0) {
                         $BahanPanganModel[] = array(
-                            'kategori_id' => $val['kategori'],
+                            'kategori' => $val['kategori'],
+                            'kategori_id' => Kategori::where('nama_kategori', '=', $val['kategori'])->get('id')[0]['id'],
                             'nama_bahan' => $val['nm_bahan'],
                             'bulan' => $val2['bulan'],
                             'tahun' => $val2['tahun'],
@@ -171,7 +229,7 @@ class BahanPanganController extends Controller
 
                 }
             }
-
+            // dd($BahanPanganModel);
             $error = null;
             return view('pages.bahan-pangan-view-import', compact('BahanPanganModel', 'error'));
         } catch (Exception $e) {
@@ -179,7 +237,5 @@ class BahanPanganController extends Controller
             $error = 'Pastikan Format yang di isikan sesuai dengan contoh.';
             return view('pages.bahan-pangan-view-import', compact('BahanPanganModel', 'error'));
         }
-
-
     }
 }
