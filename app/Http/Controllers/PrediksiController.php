@@ -14,7 +14,7 @@ class PrediksiController extends Controller
         $data_bahan = BahanPangan::select('nama_bahan')->distinct()->pluck('nama_bahan');
         $tableData = [];
 
-        return view('pages.prediksi', ['data_bahan' => $data_bahan,'request'=>$request, 'tableData' => $tableData]);
+        return view('pages.prediksi', ['data_bahan' => $data_bahan, 'request' => $request, 'tableData' => $tableData]);
 
     }
 
@@ -22,114 +22,135 @@ class PrediksiController extends Controller
     {
         $request->validate([
             'nama_bahan' => 'required|string',
+            'start_range_bahan' => 'required|string',
+            'end_range_bahan' => 'required|string',
         ]);
 
-        $nama_bahan = $request->input('nama_bahan');
+        $param_wheres = [
+            'nama_bahan' => $request->input('nama_bahan'),
+            'start_waktu' => $request->input('start_range_bahan'),
+            'end_waktu' => $request->input('end_range_bahan')
+        ];
 
-        $tableData = $this->calculateValues($nama_bahan);
+
+        $tableData = $this->calculateValues($param_wheres);
         $tableData = $tableData['data'];
         $data_bahan = BahanPangan::select('nama_bahan')->distinct()->pluck('nama_bahan');
-        return view('pages.prediksi', compact('nama_bahan', 'data_bahan', 'tableData','request'));
+        return view('pages.prediksi', compact('param_wheres', 'data_bahan', 'tableData', 'request'));
     }
 
-    public function calculateValues($nama_bahan)
+    public function calculateValues($params)
     {
-        $dataHistori = BahanPangan::where('nama_bahan', $nama_bahan)
+
+        $exp_start = explode('-', $params['start_waktu']);
+        $exp_end = explode('-', $params['end_waktu']);
+        $tahun_start = (int) $exp_start[0];
+        $bulan_start = (int) $exp_start[1];
+        $tahun_end = (int) $exp_end[0];
+        $bulan_end = (int) $exp_end[1];
+
+        $dataHistori = BahanPangan::where('nama_bahan', $params['nama_bahan'])
+            ->where(function ($query) use ($tahun_start, $bulan_start, $tahun_end, $bulan_end) {
+                if ($tahun_start == $tahun_end) {
+                    // Jika start dan end pada tahun yang sama
+                    $query->where('tahun', $tahun_start)
+                        ->whereBetween('bulan', [$bulan_start, $bulan_end]);
+                } else {
+                    // Jika rentang waktu mencakup lebih dari satu tahun
+                    $query->where(function ($query) use ($tahun_start, $bulan_start) {
+                        $query->where('tahun', $tahun_start)
+                            ->where('bulan', '>=', $bulan_start);
+                    })
+                        ->orWhere(function ($query) use ($tahun_end, $bulan_end) {
+                        $query->where('tahun', $tahun_end)
+                            ->where('bulan', '<=', $bulan_end);
+                    })
+                        ->orWhereBetween('tahun', [$tahun_start + 1, $tahun_end - 1]);
+                }
+            })
             ->orderBy('tahun', 'asc')
-            ->orderBy('bulan', 'asc')
-            ->get();
+            ->orderBy('bulan', 'asc');
+        $dataHistori = $dataHistori->get();
         $n = count($dataHistori);
+
         $xValues = [];
         $xSquaredValues = [];
         $xyValues = [];
 
         $median = $n / 2;
 
-        $dataHistori = json_decode(json_encode($dataHistori),true);
+        $dataHistori = json_decode(json_encode($dataHistori), true);
         $tableData = [];
         //ganjil
         //dd($median);
-        if($median % 2 == 1)
-        {
+        if ($median % 2 == 1) {
             $start = round($median);
             $xAtas = -1;
             //atas
-            for ($i=0; $i <= $start; $i++) 
-            { 
+            for ($i = 0; $i <= $start; $i++) {
                 $index = $start - $i; // loop keatas
-                if($i == 0)
-                {
+                if ($i == 0) {
                     $xAtas = 0;
-                }else
-                {
+                } else {
                     $xAtas += -1;
                 }
                 $dataHistori[$index]['x'] = $xAtas;
                 $square = pow($xAtas, 2);
                 $dataHistori[$index]['x_squared'] = $square;
-                $xy = $xAtas * $dataHistori[$index]['harga'];
+                $xy = $xAtas * @$dataHistori[$index]['harga'] ?? 0;
                 $dataHistori[$index]['xy'] = $xy;
-                $dataHistori[$index]['harga_aktual'] = $dataHistori[$index]['harga'];
+                $dataHistori[$index]['harga_aktual'] = @$dataHistori[$index]['harga'] ?? 0;
             }
             //bawah
             $xBawah = -1;
-            for ($i=0; $i <= $start - 1; $i++) 
-            { 
+            for ($i = 0; $i <= $start - 1; $i++) {
                 $index = $start + $i; // loop kebawah
-                if($i == 0)
-                {
+                if ($i == 0) {
                     $xBawah = 1;
-                }else
-                {
+                } else {
                     $xBawah += 1;
                 }
                 $dataHistori[$index]['x'] = $xBawah;
                 $square = pow($xBawah, 2);
                 $dataHistori[$index]['x_squared'] = $square;
-                $xy = $xBawah * $dataHistori[$index]['harga'];
+                $xy = $xBawah * @$dataHistori[$index]['harga'] ?? 0;
                 $dataHistori[$index]['xy'] = $xy;
-                $dataHistori[$index]['harga_aktual'] = $dataHistori[$index]['harga'];
+                $dataHistori[$index]['harga_aktual'] = @$dataHistori[$index]['harga'] ?? 0;
             }
-        }else //genap
+        } else //genap
         {
             $start = $n - $median;
             $xAtas = -1;
             //atas
-            for ($i=0; $i <= $start; $i++) 
-            { 
+            for ($i = 0; $i <= $start; $i++) {
                 $index = $start - $i; // loop keatas
-                if($i == 0)
-                {
+                if ($i == 0) {
                     $xAtas = 1;
-                }else
-                {
+                } else {
                     $xAtas += -2;
                 }
                 $dataHistori[$index]['x'] = $xAtas;
                 $square = pow($xAtas, 2);
                 $dataHistori[$index]['x_squared'] = $square;
-                $xy = $xAtas * $dataHistori[$index]['harga'];
+                $xy = $xAtas * @$dataHistori[$index]['harga'] ?? 0;
                 $dataHistori[$index]['xy'] = $xy;
-                $dataHistori[$index]['harga_aktual'] = $dataHistori[$index]['harga'];
+                $dataHistori[$index]['harga_aktual'] = @$dataHistori[$index]['harga'] ?? 0;
             }
             //bawah
             $xBawah = -1;
-            for ($i=0; $i <= $start - 1; $i++) 
-            { 
+            for ($i = 0; $i <= $start - 1; $i++) {
                 $index = $start + $i; // loop kebawah
-                if($i == 0)
-                {
+                if ($i == 0) {
                     $xBawah = 1;
-                }else
-                {
+                } else {
                     $xBawah += 2;
                 }
                 $dataHistori[$index]['x'] = $xBawah;
                 $square = pow($xBawah, 2);
                 $dataHistori[$index]['x_squared'] = $square;
-                $xy = $xBawah * $dataHistori[$index]['harga'];
+                $xy = $xBawah * @$dataHistori[$index]['harga'] ?? 0;
                 $dataHistori[$index]['xy'] = $xy;
-                $dataHistori[$index]['harga_aktual'] = $dataHistori[$index]['harga'];
+                $dataHistori[$index]['harga_aktual'] = @$dataHistori[$index]['harga'] ?? 0;
             }
         }
         $arr = [];

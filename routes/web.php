@@ -55,4 +55,5 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/kelola-user', [UserProfileController::class, 'edit'])->name('user-edit');
     Route::post('/kelola-user', [UserProfileController::class, 'update'])->name('user-update');
 	Route::post('logout', [LoginController::class, 'logout'])->name('logout');
+	Route::get('/download-sample', [BahanPanganController::class, 'downloadSample'])->name('download-sample');
 });

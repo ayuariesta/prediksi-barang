@@ -21,20 +21,26 @@
                                 <div class="col-md-12 mb-1">
                                     <select class="form-select" name="nama_bahan" id="nama_bahan">
                                         @foreach ($data_bahan as $bahan)
-                                            <option value="{{ $bahan }}">{{ $bahan }}</option>
+                                            <option {{ @$param_wheres['nama_bahan'] == $bahan ? 'selected' : '' }}
+                                                value="{{ $bahan }}">{{ $bahan }}</option>
                                         @endforeach
                                     </select>
                                 </div>
+                                @php
+                                    $tahun = date('Y');
+                                @endphp
                                 <div class="col-md-6 mb-1">
                                     <div class="row">
                                         <div class="col-md-4 text-center align-content-center">
                                             <input class="form-control range-bahan" type="month" id="start_range_bahan"
-                                                name="start_range_bahan" min="2018-03" value="2018-05" />
+                                                name="start_range_bahan"
+                                                value="{{ @$param_wheres['start_waktu'] ?? $tahun . '-01' }}" />
                                         </div>
                                         <div class="col-md-2 text-center align-content-center">s/d</div>
                                         <div class="col-md-4 text-center align-content-center">
                                             <input class="form-control range-bahan" type="month" id="end_range_bahan"
-                                                name="end_range_bahan" min="2018-03" value="2018-05" />
+                                                name="end_range_bahan"
+                                                value="{{ @$param_wheres['end_waktu'] ?? $tahun . '-12' }}" />
                                         </div>
                                     </div>
                                 </div>
@@ -85,41 +91,43 @@
                                         $yearLast = 0;
                                     @endphp
                                     @foreach ($tableData as $data)
-                                        <tr class="text-center">
-                                            <td>
+                                        @if (@$data['bulan'])
+                                            <tr class="text-center">
+                                                <td>
+                                                    @php
+                                                        $monthNames = [
+                                                            1 => 'Januari',
+                                                            2 => 'Februari',
+                                                            3 => 'Maret',
+                                                            4 => 'April',
+                                                            5 => 'Mei',
+                                                            6 => 'Juni',
+                                                            7 => 'Juli',
+                                                            8 => 'Agustus',
+                                                            9 => 'September',
+                                                            10 => 'Oktober',
+                                                            11 => 'November',
+                                                            12 => 'Desember',
+                                                        ];
+                                                        $bulan = $monthNames[@$data['bulan']];
+                                                    @endphp
+                                                    {{ $bulan }}
+                                                </td>
+                                                <td>{{ $data['tahun'] }}</td>
+                                                <td>Rp {{ number_format($data['harga_aktual'], 0, ',', '.') }}</td>
+                                                <td>{{ $data['x'] }}</td>
+                                                <td>{{ $data['x_squared'] }}</td>
+                                                <td>{{ $data['xy'] }}</td>
                                                 @php
-                                                    $monthNames = [
-                                                        1 => 'Januari',
-                                                        2 => 'Februari',
-                                                        3 => 'Maret',
-                                                        4 => 'April',
-                                                        5 => 'Mei',
-                                                        6 => 'Juni',
-                                                        7 => 'Juli',
-                                                        8 => 'Agustus',
-                                                        9 => 'September',
-                                                        10 => 'Oktober',
-                                                        11 => 'November',
-                                                        12 => 'Desember',
-                                                    ];
-                                                    $bulan = $monthNames[$data['bulan']];
+                                                    $totalHarga += $data['harga_aktual'];
+                                                    $totalXpangkatDua += $data['x_squared'];
+                                                    $totalXy += $data['xy'];
+                                                    $totalX += $data['x'];
+                                                    $lastX = $data['x'];
+                                                    $yearLast = $data['tahun'];
                                                 @endphp
-                                                {{ $bulan }}
-                                            </td>
-                                            <td>{{ $data['tahun'] }}</td>
-                                            <td>Rp {{ number_format($data['harga_aktual'], 0, ',', '.') }}</td>
-                                            <td>{{ $data['x'] }}</td>
-                                            <td>{{ $data['x_squared'] }}</td>
-                                            <td>{{ $data['xy'] }}</td>
-                                            @php
-                                                $totalHarga += $data['harga_aktual'];
-                                                $totalXpangkatDua += $data['x_squared'];
-                                                $totalXy += $data['xy'];
-                                                $totalX += $data['x'];
-                                                $lastX = $data['x'];
-                                                $yearLast = $data['tahun'];
-                                            @endphp
-                                        </tr>
+                                            </tr>
+                                        @endif
                                     @endforeach
                                 </tbody>
                                 <tfoot>
@@ -232,41 +240,6 @@
             $('#nama_bahan').on('change', function() {
                 initRangeWaktuBahan();
             })
-
-            function calendarDiff(date1, date2) {
-                var later = false;
-
-                if (date1 > date2) {
-                    later = true;
-                    var temp = date2;
-                    date2 = date1;
-                    date1 = temp;
-                }
-                date1 = date1.split("-");
-                var y1 = date1[0],
-                    m1 = date1[1],
-                    d1 = date1[2];
-                date2 = date2.split("-");
-                var y2 = date2[0],
-                    m2 = date2[1],
-                    d2 = date2[2];
-
-                if ((d2 -= d1) < 0) {
-                    d2 += new Date(y1, m1, 0).getDate(); // *note
-                    ++m1;
-                }
-                if ((m2 -= m1) < 0) {
-                    m2 += 12;
-                    ++y1;
-                }
-                y2 = y2 - y1;
-                return {
-                    years: y2,
-                    months: m2,
-                    days: d2,
-                    later: later
-                };
-            }
 
             $('.range-bahan').on('change', function() {
                 let start_momenth = moment($('#start_range_bahan').val());

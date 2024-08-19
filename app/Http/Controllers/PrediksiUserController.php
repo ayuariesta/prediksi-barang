@@ -49,14 +49,22 @@ class PrediksiUserController extends Controller
         // Retrieve data from your database or data source based on the selected nama_bahan
         $dataHistori = BahanPangan::where('nama_bahan', $params['nama_bahan'])
             ->where(function ($query) use ($tahun_start, $bulan_start, $tahun_end, $bulan_end) {
-                $query->where(function ($query) use ($tahun_start, $bulan_start) {
+                if ($tahun_start == $tahun_end) {
+                    // Jika start dan end pada tahun yang sama
                     $query->where('tahun', $tahun_start)
-                        ->where('bulan', '>=', $bulan_start);
-                })
-                    ->orWhere(function ($query) use ($tahun_end, $bulan_end) {
+                        ->whereBetween('bulan', [$bulan_start, $bulan_end]);
+                } else {
+                    // Jika rentang waktu mencakup lebih dari satu tahun
+                    $query->where(function ($query) use ($tahun_start, $bulan_start) {
+                        $query->where('tahun', $tahun_start)
+                            ->where('bulan', '>=', $bulan_start);
+                    })
+                        ->orWhere(function ($query) use ($tahun_end, $bulan_end) {
                         $query->where('tahun', $tahun_end)
                             ->where('bulan', '<=', $bulan_end);
-                    });
+                    })
+                        ->orWhereBetween('tahun', [$tahun_start + 1, $tahun_end - 1]);
+                }
             })
             ->orderBy('tahun', 'asc')
             ->orderBy('bulan', 'asc');
@@ -86,9 +94,9 @@ class PrediksiUserController extends Controller
                 $dataHistori[$index]['x'] = $xAtas;
                 $square = pow($xAtas, 2);
                 $dataHistori[$index]['x_squared'] = $square;
-                $xy = $xAtas * $dataHistori[$index]['harga'];
+                $xy = $xAtas * @$dataHistori[$index]['harga'] ?? 0;
                 $dataHistori[$index]['xy'] = $xy;
-                $dataHistori[$index]['harga_aktual'] = $dataHistori[$index]['harga'];
+                $dataHistori[$index]['harga_aktual'] = @$dataHistori[$index]['harga'] ?? 0;
             }
             //bawah
             $xBawah = -1;
@@ -102,9 +110,9 @@ class PrediksiUserController extends Controller
                 $dataHistori[$index]['x'] = $xBawah;
                 $square = pow($xBawah, 2);
                 $dataHistori[$index]['x_squared'] = $square;
-                $xy = $xBawah * $dataHistori[$index]['harga'];
+                $xy = $xBawah * @$dataHistori[$index]['harga'] ?? 0;
                 $dataHistori[$index]['xy'] = $xy;
-                $dataHistori[$index]['harga_aktual'] = $dataHistori[$index]['harga'];
+                $dataHistori[$index]['harga_aktual'] = @$dataHistori[$index]['harga'] ?? 0;
             }
         } else //genap
         {
@@ -121,9 +129,9 @@ class PrediksiUserController extends Controller
                 $dataHistori[$index]['x'] = $xAtas;
                 $square = pow($xAtas, 2);
                 $dataHistori[$index]['x_squared'] = $square;
-                $xy = $xAtas * $dataHistori[$index]['harga'];
+                $xy = $xAtas * @$dataHistori[$index]['harga'] ?? 0;
                 $dataHistori[$index]['xy'] = $xy;
-                $dataHistori[$index]['harga_aktual'] = $dataHistori[$index]['harga'];
+                $dataHistori[$index]['harga_aktual'] = @$dataHistori[$index]['harga'] ?? 0;
             }
             //bawah
             $xBawah = -1;
@@ -137,9 +145,9 @@ class PrediksiUserController extends Controller
                 $dataHistori[$index]['x'] = $xBawah;
                 $square = pow($xBawah, 2);
                 $dataHistori[$index]['x_squared'] = $square;
-                $xy = $xBawah * $dataHistori[$index]['harga'];
+                $xy = $xBawah * @$dataHistori[$index]['harga'] ?? 0;
                 $dataHistori[$index]['xy'] = $xy;
-                $dataHistori[$index]['harga_aktual'] = $dataHistori[$index]['harga'];
+                $dataHistori[$index]['harga_aktual'] = @$dataHistori[$index]['harga'] ?? 0;
             }
         }
         $arr = [];
