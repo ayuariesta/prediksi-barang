@@ -106,18 +106,18 @@ class BahanPanganController extends Controller
         );
 
         $arr_bulan = [
-            'Jan' => 1,
-            'Feb' => 2,
-            'Mar' => 3,
-            'Apr' => 4,
+            'Januari' => 1,
+            'Februari' => 2,
+            'Maret' => 3,
+            'April' => 4,
             'Mei' => 5,
-            'Jun' => 6,
-            'Jul' => 7,
-            'Agu' => 8,
-            'Sep' => 9,
-            'Okt' => 10,
-            'Nov' => 11,
-            'Des' => 12,
+            'Juni' => 6,
+            'Juli' => 7,
+            'Agustus' => 8,
+            'September' => 9,
+            'Oktober' => 10,
+            'November' => 11,
+            'Desember' => 12,
         ];
 
         $bahanpangan = BahanPangan::where('nama_bahan', $request->nama_bahan)
@@ -188,9 +188,10 @@ class BahanPanganController extends Controller
             $headers = $sheet1[0];
             $headers_exp = [];
             for ($i = 2; $i < count($headers); $i++) {
-                $exp_val = explode(' ', $headers[$i]);
+                $exp_val = explode('-', $headers[$i]);
+                // dd($exp_val);
                 $headers_exp[] = [
-                    'tahun' => $exp_val[2],
+                    'tahun' => $exp_val[1],
                     'bulan' => $exp_val[0]
                 ];
             }
@@ -213,6 +214,23 @@ class BahanPanganController extends Controller
                     'harga' => $ib_harga
                 ];
             }
+
+
+            $arr_bulan = [
+                1 => 'Januari',
+                2 => 'Februari',
+                3 => 'Maret',
+                4 => 'April',
+                5 => 'Mei',
+                6 => 'Juni',
+                7 => 'Juli',
+                8 => 'Agustus',
+                9 => 'September',
+                10 => 'Oktober',
+                11 => 'November',
+                12 => 'Desember',
+            ];
+
             $BahanPanganModel = [];
             foreach ($bahan_imp as $key => $val) {
                 foreach ($val['harga'] as $key2 => $val2) {
@@ -221,7 +239,7 @@ class BahanPanganController extends Controller
                             'kategori' => $val['kategori'],
                             'kategori_id' => Kategori::where('nama_kategori', '=', $val['kategori'])->get('id')[0]['id'],
                             'nama_bahan' => $val['nm_bahan'],
-                            'bulan' => $val2['bulan'],
+                            'bulan' => $arr_bulan[$val2['bulan']],
                             'tahun' => $val2['tahun'],
                             'harga' => $val2['harga']
                         );
