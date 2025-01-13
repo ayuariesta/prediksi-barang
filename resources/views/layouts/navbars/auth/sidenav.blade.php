@@ -20,6 +20,14 @@
                     <span class="nav-link-text ms-1">Dashboard</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link {{ Route::currentRouteName() == 'kelola-admin' ? 'active' : '' }}" href="{{ route('kelola-admin') }}">
+                    <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
+                        <i class="fa fa-cog text-primary text-sm opacity-10"></i>
+                    </div>
+                    <span class="nav-link-text ms-1">Kelola User</span>
+                </a>
+            </li>
             <li class="nav-item mt-3">
                 <h6 class="ps-4 ms-2 text-uppercase text-xs font-weight-bolder opacity-6">Data Master</h6>
             </li>
@@ -35,7 +43,7 @@
             <li class="nav-item">
                 <a class="nav-link {{ Route::currentRouteName() == 'kategori' ? 'active' : '' }}" href="{{ url('kategori')}}">
                     <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="ni ni-bullet-list-67 text-dark text-sm opacity-10"></i>
+                        <i class="ni ni-bullet-list-67 text-primary text-sm opacity-10"></i>
                     </div>
                     <span class="nav-link-text ms-1">Kategori</span>
                 </a>
@@ -47,17 +55,9 @@
                 <a class="nav-link {{ Route::currentRouteName() == 'prediksi' ? 'active' : '' }}" href="{{ route('prediksi') }}">
                     <div
                         class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="ni ni-chart-bar-32 text-dark text-sm opacity-10"></i>
+                        <i class="ni ni-chart-bar-32 text-primary text-sm opacity-10"></i>
                     </div>
                     <span class="nav-link-text ms-1">Prediksi</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link {{ request()->route()->getName() == 'user-edit' ? 'active' : '' }}" href="{{ route('user-edit', ['id' => auth()->id()]) }}">
-                    <div class="icon icon-shape icon-sm border-radius-md text-center me-2 d-flex align-items-center justify-content-center">
-                        <i class="fa fa-cog text-dark text-sm opacity-10"></i>
-                    </div>
-                    <span class="nav-link-text ms-1">Kelola User</span>
                 </a>
             </li>
         </ul>

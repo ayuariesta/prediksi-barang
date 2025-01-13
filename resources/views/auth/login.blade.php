@@ -30,8 +30,12 @@
                                         </div>
                                         <div class="flex flex-col mb-3">
                                             <label for="password">{{ __('Password') }}</label>
-                                            <input type="password" name="password" class="form-control form-control-lg" aria-label="Password" required autocomplete="current-password">
+                                            <input type="password" id="password" name="password" class="form-control form-control-lg" aria-label="Password" required autocomplete="current-password">
                                             @error('password') <p class="text-danger text-xs pt-1"> {{$message}} </p>@enderror
+                                        </div>
+                                        <div>
+                                            <input type="checkbox" id="showPassword" onclick="togglePassword()">
+                                            <label for="showPassword">Show Password</label>
                                         </div>
                                         <div class="text-center">
                                             <button type="submit" class="btn btn-lg btn-primary btn-lg w-100 mt-4 mb-0">Sign in</button>
@@ -43,7 +47,7 @@
                         <div
                             class="col-6 d-lg-flex d-none h-100 my-auto pe-0 position-absolute top-0 end-0 text-center justify-content-center flex-column">
                             <div class="position-relative bg-gradient-primary h-100 m-3 px-7 border-radius-lg d-flex flex-column justify-content-center overflow-hidden"
-                                style="background-image: url('https://img.jatimpos.id/img/content/2019/08/25/7071/meriahnya-acara-minggu-pertanian-di-surabaya-mnvur2zeZn.jpg');
+                                style="background-image: url('https://media.istockphoto.com/id/453963935/id/foto/buah-dan-sayuran-di-pasar-kota-di-riga.jpg?s=612x612&w=0&k=20&c=0nnP1E-hb56_LaAKJhJU1Bhj0EXBybp0Fu8wmvxieCU=');
               background-size: cover;">
                                 <span class="mask bg-gradient-primary opacity-6"></span>
                             </div>
@@ -57,12 +61,11 @@
 @push('js')
 <script>
     function togglePassword() {
-        var passwordField = document.getElementById("password");
-        var passwordFieldType = passwordField.type;
-        if (passwordFieldType === "password") {
-            passwordField.type = "text";
+        const passwordField = document.getElementById('password');
+        if (passwordField.type === 'password') {
+            passwordField.type = 'text';
         } else {
-            passwordField.type = "password";
+            passwordField.type = 'password';
         }
     }
 </script>

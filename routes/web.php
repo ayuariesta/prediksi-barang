@@ -30,15 +30,17 @@ Route::get('/', [HomeController::class, 'index1'])->middleware('guest')->name('h
 Route::get('/bahan-pangan-user', [HargaBahanController::class, 'index'])->middleware('guest')->name('bahan-pangan-user');
 Route::get('/prediksi-user', [PrediksiUserController::class, 'form'])->middleware('guest')->name('prediksi-user');
 Route::post('/prediksi-user', [PrediksiUserController::class, 'prediksiHarga'])->middleware('guest')->name('harga-prediksi');
-Route::get('/admin', function () {return redirect('/dashboard');})->middleware('auth');
-	Route::get('/login', [LoginController::class, 'show'])->middleware('guest')->name('login');
-	Route::post('/login', [LoginController::class, 'login'])->middleware('guest')->name('login.perform');
-	Route::get('/reset-password', [ResetPassword::class, 'show'])->middleware('guest')->name('reset-password');
-	Route::post('/reset-password', [ResetPassword::class, 'send'])->middleware('guest')->name('reset.perform');
-	Route::get('/change-password', [ChangePassword::class, 'show'])->middleware('guest')->name('change-password');
-	Route::post('/change-password', [ChangePassword::class, 'update'])->middleware('guest')->name('change.perform');
-	Route::get('/dashboard', [HomeController::class, 'index'])->name('home')->middleware('auth');
+Route::get('/login', [LoginController::class, 'show'])->middleware('guest')->name('login');
+Route::post('/login', [LoginController::class, 'login'])->middleware('guest')->name('login.perform');
+Route::get('/reset-password', [ResetPassword::class, 'show'])->middleware('guest')->name('reset-password');
+Route::post('/reset-password', [ResetPassword::class, 'send'])->middleware('guest')->name('reset.perform');
+Route::get('/change-password', [ChangePassword::class, 'show'])->middleware('guest')->name('change-password');
+Route::post('/change-password', [ChangePassword::class, 'update'])->middleware('guest')->name('change.perform');
 Route::group(['middleware' => 'auth'], function () {
+	Route::get('/admin', function () {return redirect('/dashboard');});
+	Route::get('/dashboard', [HomeController::class, 'index'])->name('home');
+	Route::get('/get-chart-data', [HomeController::class, 'getChartData']);
+	Route::get('/get-available-years', [HomeController::class, 'getAvailableYears']);
 	Route::get('/prediksi', [PrediksiController::class, 'form'])->name('prediksi');
 	Route::post('/prediksi', [PrediksiController::class, 'prediksiHarga'])->name('prediksi-harga');
 	Route::get('/bahan-pangan', [BahanPanganController::class, 'index'])->name('bahan-pangan');
@@ -54,8 +56,7 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/kategori/hapus/{id}', [KategoriController::class, 'delete'])->name('kategori-hapus');
 	Route::get('/kategori/edit/{id}', [KategoriController::class, 'edit'])->name('kategori-edit');
     Route::post('/kategori/edit/{id}', [KategoriController::class, 'update'])->name('kategori-update');
-	Route::get('/kelola-user', [UserProfileController::class, 'edit'])->name('user-edit');
-    Route::post('/kelola-user', [UserProfileController::class, 'update'])->name('user-update');
+	Route::get('/kelola-admin', [UserProfileController::class, 'index'])->name('kelola-admin');
 	Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 	Route::get('/download-sample', [BahanPanganController::class, 'downloadSample'])->name('download-sample');
 });

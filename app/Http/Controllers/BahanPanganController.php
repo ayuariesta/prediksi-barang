@@ -20,6 +20,7 @@ class BahanPanganController extends Controller
     {
         if ($request->ajax()) {
             $bahanpangan = BahanPangan::select(['id', 'nama_bahan', 'kategori_id', 'bulan', 'tahun', 'harga'])
+                ->orderBy('tahun','desc')
                 ->with(['kategori']);
 
             return Datatables::of($bahanpangan)
@@ -154,13 +155,13 @@ class BahanPanganController extends Controller
 
     public function downloadSample()
     {
-        $file = public_path() . "/docs/sample.xlsx";
+        $file = public_path() . "/docs/sample1.xlsx";
 
         $headers = array(
             'Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         );
 
-        return Response::download($file, 'sample.xlsx', $headers);
+        return Response::download($file, 'sample1.xlsx', $headers);
     }
     public function importBahanPangan(Request $request)
     {
@@ -188,12 +189,14 @@ class BahanPanganController extends Controller
             $headers = $sheet1[0];
             $headers_exp = [];
             for ($i = 2; $i < count($headers); $i++) {
-                $exp_val = explode('-', $headers[$i]);
-                // dd($exp_val);
-                $headers_exp[] = [
-                    'tahun' => $exp_val[1],
-                    'bulan' => $exp_val[0]
-                ];
+                if($headers[$i] != null){
+                    $exp_val = explode('-', $headers[$i]);
+                    $headers_exp[] = [
+                        'tahun' => $exp_val[1],
+                        'bulan' => $exp_val[0]
+                    ];
+                }
+
             }
             // dd($headers_exp);
             $bahan_imp = [];
@@ -251,6 +254,7 @@ class BahanPanganController extends Controller
             $error = null;
             return view('pages.bahan-pangan-view-import', compact('BahanPanganModel', 'error'));
         } catch (Exception $e) {
+            //dd($e);
             $BahanPanganModel = [];
             $error = 'Pastikan Format yang di isikan sesuai dengan contoh.';
             return view('pages.bahan-pangan-view-import', compact('BahanPanganModel', 'error'));

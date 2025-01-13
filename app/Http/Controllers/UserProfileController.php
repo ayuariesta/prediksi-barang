@@ -10,6 +10,11 @@ use Illuminate\Validation\Rule;
 
 class UserProfileController extends Controller
 {
+    public function index()
+    {
+        return view('pages.kelola-user');
+    }
+
     public function edit()
     {
         $user = auth()->user();

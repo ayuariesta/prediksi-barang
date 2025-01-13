@@ -40,7 +40,9 @@
             @yield('content')
         @else
             @if (!in_array(request()->route()->getName(), ['profile']))
-                <div class="min-height-300 bg-primary position-absolute w-100"></div>
+                <div class="position-absolute w-100 min-height-300 top-0" style="background-image: url('https://png.pngtree.com/thumb_back/fh260/background/20220506/pngtree-audit-document-placed-on-an-office-table-document-paperwork-administration-photo-image_30286532.jpg'); background-position-y: 50%;">
+                    <span class="mask bg-primary opacity-6"></span>
+                </div>
             @elseif (in_array(request()->route()->getName(), ['profile']))
                 <div class="position-absolute w-100 min-height-300 top-0" style="background-image: url('https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/profile-layout-header.jpg'); background-position-y: 50%;">
                     <span class="mask bg-primary opacity-6"></span>
