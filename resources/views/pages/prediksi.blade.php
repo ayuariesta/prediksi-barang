@@ -15,10 +15,8 @@
                         <form action="{{ route('prediksi-harga') }}" method="POST">
                             @csrf
                             <div class="row">
-                                <div class="col-md-12 mb-1">
+                                <div class="col-md-6 mb-3">
                                     <label for="nama_bahan">Pilih Nama Bahan:</label>
-                                </div>
-                                <div class="col-md-12 mb-1">
                                     <select class="form-select" name="nama_bahan" id="nama_bahan">
                                         @foreach ($data_bahan as $bahan)
                                             <option {{ @$param_wheres['nama_bahan'] == $bahan ? 'selected' : '' }}
@@ -29,21 +27,25 @@
                                 @php
                                     $tahun = date('Y');
                                 @endphp
-                                <div class="col-md-6 mb-1">
-                                    <div class="row">
-                                        <div class="col-md-4 text-center align-content-center">
-                                            <input class="form-control range-bahan" type="month" id="start_range_bahan"
-                                                name="start_range_bahan"
-                                                value="{{ @$param_wheres['start_waktu'] ?? $tahun . '-01' }}" />
-                                        </div>
-                                        <div class="col-md-2 text-center align-content-center">s/d</div>
-                                        <div class="col-md-4 text-center align-content-center">
-                                            <input class="form-control range-bahan" type="month" id="end_range_bahan"
-                                                name="end_range_bahan"
-                                                value="{{ @$param_wheres['end_waktu'] ?? $tahun . '-12' }}" />
+                                <div class="row">
+                                    <label for="start_range_bahan">Rentang Waktu:</label>
+                                    <div class="col-md-6 mb-1">
+                                        <div class="row">
+                                            <div class="col-md-4 text-center align-content-center">
+                                                <input class="form-control range-bahan" type="month" id="start_range_bahan"
+                                                    name="start_range_bahan"
+                                                    value="{{ @$param_wheres['start_waktu'] ?? $tahun . '-01' }}" />
+                                            </div>
+                                            <div class="col-md-2 text-center align-content-center">s/d</div>
+                                            <div class="col-md-4 text-center align-content-center">
+                                                <input class="form-control range-bahan" type="month" id="end_range_bahan"
+                                                    name="end_range_bahan"
+                                                    value="{{ @$param_wheres['end_waktu'] ?? $tahun . '-12' }}" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
+                                <br>
                                 <div class="col-md-12">
                                     <button type="submit" class="btn btn-primary">Simpan</button>
                                 </div>
@@ -87,6 +89,7 @@
                                         $dataA = 0;
                                         $dataB = 0;
                                         $lastX = 0;
+                                        $monthLast = 0;
                                         $yearLast = 0;
                                     @endphp
                                     @foreach ($tableData as $data)
@@ -124,6 +127,7 @@
                                                     $totalX += $data['x'];
                                                     $lastX = $data['x'];
                                                     $yearLast = $data['tahun'];
+                                                    $monthLast = $data['bulan'];
                                                 @endphp
                                             </tr>
                                         @endif
@@ -312,11 +316,21 @@
                                                 11 => 'November',
                                                 12 => 'Desember',
                                             ];
+
+                                            $lastMonth = $monthLast;
+                                            $lastYear = $yearLast;
+
+                                            $startMonth = $lastMonth + 1;
+                                            $startYear = $lastYear;
+                                            if ($startMonth > 12) {
+                                                $startMonth = 1;
+                                                $startYear += 1;
+                                            }
                                         @endphp
-                                        @foreach ($monthNames as $key => $item)
+                                        @for ($i = 0; $i < 12; $i++)
                                             <tr class="text-center">
-                                                <td>{{ $item }}</td>
-                                                <td>{{ $yearLast + 1 }}</td>
+                                                <td>{{ $monthNames[$startMonth] }}</td>
+                                                <td>{{ $startYear }}</td>
                                                 <td>
                                                     @if ($median % 2 == 1)
                                                         @php $lastX += 1; @endphp
@@ -330,7 +344,16 @@
                                                     Rp {{ number_format($prediksi, 0, ',', '.') }}
                                                 </td>
                                             </tr>
-                                        @endforeach
+
+                                            @php
+                                                // Pindah ke bulan berikutnya
+                                                $startMonth++;
+                                                if ($startMonth > 12) {
+                                                    $startMonth = 1;
+                                                    $startYear++;
+                                                }
+                                            @endphp
+                                        @endfor
                                     @endif
                                 </tbody>
                             </table>

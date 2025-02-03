@@ -88,6 +88,7 @@
                                         $dataA = 0;
                                         $dataB = 0;
                                         $lastX = 0;
+                                        $monthLast = 0;
                                         $yearLast = 0;
                                     @endphp
                                     @foreach ($tableData as $data)
@@ -125,6 +126,7 @@
                                                     $totalX += $data['x'];
                                                     $lastX = $data['x'];
                                                     $yearLast = $data['tahun'];
+                                                    $monthLast = $data['bulan'];
                                                 @endphp
                                             </tr>
                                         @endif
@@ -190,7 +192,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @if (count($request->all()) > 0)
+                                @if (count($request->all()) > 0)
                                         @php
                                             $median = count($tableData) / 2;
                                             $monthNames = [
@@ -207,11 +209,21 @@
                                                 11 => 'November',
                                                 12 => 'Desember',
                                             ];
+
+                                            $lastMonth = $monthLast;
+                                            $lastYear = $yearLast;
+
+                                            $startMonth = $lastMonth + 1;
+                                            $startYear = $lastYear;
+                                            if ($startMonth > 12) {
+                                                $startMonth = 1;
+                                                $startYear += 1;
+                                            }
                                         @endphp
-                                        @foreach ($monthNames as $key => $item)
+                                        @for ($i = 0; $i < 12; $i++)
                                             <tr class="text-center">
-                                                <td>{{ $item }}</td>
-                                                <td>{{ $yearLast + 1 }}</td>
+                                                <td>{{ $monthNames[$startMonth] }}</td>
+                                                <td>{{ $startYear }}</td>
                                                 <td>
                                                     @if ($median % 2 == 1)
                                                         @php $lastX += 1; @endphp
@@ -225,7 +237,16 @@
                                                     Rp {{ number_format($prediksi, 0, ',', '.') }}
                                                 </td>
                                             </tr>
-                                        @endforeach
+
+                                            @php
+                                                // Pindah ke bulan berikutnya
+                                                $startMonth++;
+                                                if ($startMonth > 12) {
+                                                    $startMonth = 1;
+                                                    $startYear++;
+                                                }
+                                            @endphp
+                                        @endfor
                                     @endif
                                 </tbody>
                             </table>

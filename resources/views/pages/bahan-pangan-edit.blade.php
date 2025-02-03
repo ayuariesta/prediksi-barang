@@ -22,10 +22,10 @@
                         </div>
                         <div class="mb-3">
                             <label for="kategori_id" class="form-label">Kategori</label><br>
-                                <select class="form-control @error('kategori_id') is-invalid @enderror" name="kategori_id" id="kategori_id" readonly>
+                                <select class="form-control @error('kategori_id') is-invalid @enderror" name="kategori_id" id="kategori_id" disabled>
                                     <option selected>Pilih Nama Kategori</option>
                                     @foreach ($kategori as $kategori)
-                                    <option  value="{{ $kategori->id }}" {{ old('kategori_id', $bahanpangan->kategori_id) == $kategori->id ? 'selected' : null }}>{{ $kategori->nama_kategori }}</option>
+                                    <option  value="{{ $kategori->id }}" {{ old('kategori_id', $bahanpangan->kategori_id) == $kategori->id ? 'selected' : null }}>{{ $kategori->nama_kategori }} </option>
                                     @endforeach
                                 </select>
                                 @error('kategori_id')

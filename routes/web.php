@@ -56,7 +56,8 @@ Route::group(['middleware' => 'auth'], function () {
 	Route::get('/kategori/hapus/{id}', [KategoriController::class, 'delete'])->name('kategori-hapus');
 	Route::get('/kategori/edit/{id}', [KategoriController::class, 'edit'])->name('kategori-edit');
     Route::post('/kategori/edit/{id}', [KategoriController::class, 'update'])->name('kategori-update');
-	Route::get('/kelola-admin', [UserProfileController::class, 'index'])->name('kelola-admin');
+	Route::get('/kelola-user', [UserProfileController::class, 'edit'])->name('kelola-user.edit');
+	Route::put('/kelola-user', [UserProfileController::class, 'update'])->name('kelola-user.update');
 	Route::post('logout', [LoginController::class, 'logout'])->name('logout');
 	Route::get('/download-sample', [BahanPanganController::class, 'downloadSample'])->name('download-sample');
 });

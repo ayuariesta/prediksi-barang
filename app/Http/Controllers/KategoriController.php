@@ -24,6 +24,7 @@ class KategoriController extends Controller
                 ->rawColumns(['action'])
                 ->make(true);
         }
+        
 
         return view('pages.kategori');
     }

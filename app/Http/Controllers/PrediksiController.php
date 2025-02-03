@@ -77,45 +77,47 @@ class PrediksiController extends Controller
         $xSquaredValues = [];
         $xyValues = [];
 
-        $median = $n / 2;
+        $median = floor($n / 2);
 
         $dataHistori = json_decode(json_encode($dataHistori), true);
         $tableData = [];
+        
         //ganjil
         //dd($median);
-        if ($median % 2 == 1) {
-            $start = round($median);
+        if ($n % 2 == 1) {
+
+            if (isset($dataHistori[$median])) {
+                // Tambahkan nilai tengah 0
+                $dataHistori[$median]['x'] = 0;
+                $dataHistori[$median]['x_squared'] = 0;
+                $dataHistori[$median]['xy'] = 0;
+                $dataHistori[$median]['harga_aktual'] = @$dataHistori[$median]['harga'] ?? 0;
+            }
+
             $xAtas = -1;
             //atas
-            for ($i = 0; $i <= $start; $i++) {
-                $index = $start - $i; // loop keatas
-                if ($i == 0) {
-                    $xAtas = 0;
-                } else {
-                    $xAtas += -1;
+            for ($i = 1; $i <= $median; $i++) {
+                $index = $median - $i;
+                if (isset($dataHistori[$index])) {
+                    $dataHistori[$index]['x'] = $xAtas;
+                    $dataHistori[$index]['x_squared'] = pow($xAtas, 2);
+                    $dataHistori[$index]['xy'] = $xAtas * @$dataHistori[$index]['harga'] ?? 0;
+                    $dataHistori[$index]['harga_aktual'] = @$dataHistori[$index]['harga'] ?? 0;
+                    $xAtas--;
                 }
-                $dataHistori[$index]['x'] = $xAtas;
-                $square = pow($xAtas, 2);
-                $dataHistori[$index]['x_squared'] = $square;
-                $xy = $xAtas * @$dataHistori[$index]['harga'] ?? 0;
-                $dataHistori[$index]['xy'] = $xy;
-                $dataHistori[$index]['harga_aktual'] = @$dataHistori[$index]['harga'] ?? 0;
             }
             //bawah
-            $xBawah = -1;
-            for ($i = 0; $i <= $start - 1; $i++) {
-                $index = $start + $i; // loop kebawah
-                if ($i == 0) {
-                    $xBawah = 1;
-                } else {
-                    $xBawah += 1;
+            $xBawah = 1;
+            for ($i = 1; $i <= ($n - $median - 1); $i++) {
+                $index = $median + $i;
+
+                if (isset($dataHistori[$index])) {
+                    $dataHistori[$index]['x'] = $xBawah;
+                    $dataHistori[$index]['x_squared'] = pow($xBawah, 2);
+                    $dataHistori[$index]['xy'] = $xBawah * @$dataHistori[$index]['harga'] ?? 0;
+                    $dataHistori[$index]['harga_aktual'] = @$dataHistori[$index]['harga'] ?? 0;
+                    $xBawah++;
                 }
-                $dataHistori[$index]['x'] = $xBawah;
-                $square = pow($xBawah, 2);
-                $dataHistori[$index]['x_squared'] = $square;
-                $xy = $xBawah * @$dataHistori[$index]['harga'] ?? 0;
-                $dataHistori[$index]['xy'] = $xy;
-                $dataHistori[$index]['harga_aktual'] = @$dataHistori[$index]['harga'] ?? 0;
             }
         } else //genap
         {
