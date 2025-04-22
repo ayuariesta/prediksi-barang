@@ -362,6 +362,14 @@
                 </div>
             </div>
         </div>
+        <br><br>
+        <p class="mb-0 font-weight-bold">Perbandingan Grafik Harga Aktual dan Prediksi</p>
+        <div class="card">
+            <div class="card-body">
+                <canvas id="hargaChart"></canvas>
+            </div>
+        </div>
+
         <script type="text/javascript">
             initRangeWaktuBahan();
 
@@ -400,6 +408,60 @@
                     console.log(err);
                 }
             }
+
+        </script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                var ctx = document.getElementById('hargaChart').getContext('2d');
+
+                var labels = {!! json_encode(array_column($tableData, 'bulan')) !!};
+                var hargaAktual = {!! json_encode(array_column($tableData, 'harga_aktual')) !!};
+                var hargaPrediksi = [];
+
+                @foreach ($tableData as $data)
+                    hargaPrediksi.push({{ $dataA + ($dataB * $data['x']) }});
+                @endforeach
+
+                var monthNames = [
+                    "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+                    "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+                ];
+
+                var formattedLabels = labels.map(function (month) {
+                    return monthNames[month - 1];
+                });
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: formattedLabels,
+                        datasets: [
+                            {
+                                label: 'Harga Aktual',
+                                data: hargaAktual,
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                                borderWidth: 2
+                            },
+                            {
+                                label: 'Harga Prediksi',
+                                data: hargaPrediksi,
+                                borderColor: 'rgba(54, 162, 235, 1)',
+                                backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                                borderWidth: 2
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: false
+                            }
+                        }
+                    }
+                });
+            });
         </script>
         @include('layouts.footers.auth.footer')
     </div>
